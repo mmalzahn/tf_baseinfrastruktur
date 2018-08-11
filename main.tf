@@ -26,7 +26,7 @@ resource "aws_vpc" "DemoVPC" {
 
 resource "aws_subnet" "dmz1" {
    vpc_id = "${aws_vpc.DemoVPC.id}"
-   cidr_block = "10.20.210.0/24"
+   cidr_block = "${cidrsubnet(var.vpc_cdir, 8, 210)}"
    map_public_ip_on_launch = "true"
    availability_zone = "eu-west-1a"
    tags {
@@ -37,7 +37,7 @@ resource "aws_subnet" "dmz1" {
 }
 resource "aws_subnet" "dmz2" {
    vpc_id = "${aws_vpc.DemoVPC.id}"
-   cidr_block = "10.20.220.0/24"
+   cidr_block = "${cidrsubnet(var.vpc_cdir, 8, 220)}"
    map_public_ip_on_launch = "true"
    availability_zone = "eu-west-1b"
    tags {
@@ -48,7 +48,7 @@ resource "aws_subnet" "dmz2" {
 }
 resource "aws_subnet" "dmz3" {
    vpc_id = "${aws_vpc.DemoVPC.id}"
-   cidr_block = "10.20.230.0/24"
+   cidr_block = "${cidrsubnet(var.vpc_cdir, 8, 230)}"
    map_public_ip_on_launch = "true"
    availability_zone = "eu-west-1c"
    tags {
@@ -59,7 +59,7 @@ resource "aws_subnet" "dmz3" {
 }
 resource "aws_subnet" "Backend1" {
    vpc_id = "${aws_vpc.DemoVPC.id}"
-   cidr_block = "10.20.110.0/24"
+   cidr_block = "${cidrsubnet(var.vpc_cdir, 8, 110)}"
    map_public_ip_on_launch = "false"
    availability_zone = "eu-west-1a"
    tags {
@@ -70,7 +70,7 @@ resource "aws_subnet" "Backend1" {
 }
 resource "aws_subnet" "Backend2" {
    vpc_id = "${aws_vpc.DemoVPC.id}"
-   cidr_block = "10.20.120.0/24"
+   cidr_block = "${cidrsubnet(var.vpc_cdir, 8, 120)}"
    map_public_ip_on_launch = "false"
    availability_zone = "eu-west-1b"
    tags {
@@ -81,7 +81,7 @@ resource "aws_subnet" "Backend2" {
 }
 resource "aws_subnet" "Backend3" {
    vpc_id = "${aws_vpc.DemoVPC.id}"
-   cidr_block = "10.20.130.0/24"
+   cidr_block = "${cidrsubnet(var.vpc_cdir, 8, 130)}"
    map_public_ip_on_launch = "false"
    availability_zone = "eu-west-1c"
    tags {
