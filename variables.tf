@@ -26,3 +26,15 @@
 #     us-west-2 = "ami-8803e0f0"
 #   }
 # }
+
+variable "vpc_cdir" {
+   default = "10.20.0.0/16"
+}
+
+variable "aws_region" {
+  default = "eu-west-1"
+}
+
+variable "tag_mm_belong" {
+   default = "TerraDemo"
+}
