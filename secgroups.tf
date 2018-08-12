@@ -25,7 +25,8 @@ ingress {
   tags {
     responsible = "Matthias Malzahn"
     mm_belong = "${var.tag_mm_belong}"
-       terraform = "true"
+    terraform = "true"
+    Name = "SG_HTTPS_IN_anywhere"
   }
 }
 
@@ -50,10 +51,10 @@ resource "aws_security_group" "SG_TCP444-445Stream_IN_anywhere" {
   tags {
     responsible = "Matthias Malzahn"
     mm_belong = "${var.tag_mm_belong}"
-       terraform = "true"
+    terraform = "true"
+    Name = "SG_TCP444-445Stream_IN_anywhere"
   }
 }
-
 resource "aws_security_group" "SG_TCP444-445Stream_IN_from_Revproxy" {
   name        = "SG_TCP444-445Stream_IN_from_Revproxy"
   description = "Allow Port 444-445 TCP Stream inbound traffic from Revproxy"
@@ -76,10 +77,10 @@ resource "aws_security_group" "SG_TCP444-445Stream_IN_from_Revproxy" {
   tags {
     responsible = "Matthias Malzahn"
     mm_belong = "${var.tag_mm_belong}"
-       terraform = "true"
+    terraform = "true"
+    Name = "SG_TCP444-445Stream_IN_from_Revproxy"
   }
 }
-
 resource "aws_security_group" "SG_EFS_IN_FROM_VPC" {
   name        = "SG_EFS_IN_VPC"
   description = "Allow EFS traffic from VPC"
@@ -101,10 +102,10 @@ resource "aws_security_group" "SG_EFS_IN_FROM_VPC" {
   tags {
     responsible = "Matthias Malzahn"
     mm_belong = "${var.tag_mm_belong}"
-       terraform = "true"
+    terraform = "true"
+    Name = "SG_EFS_IN_VPC"
   }
 }
-
 resource "aws_security_group" "SG_HTTPS_IN_from_Revproxy" {
   name        = "SG_HTTPS_IN_from_Revproxy"
   description = "Allow HTTPS inbound traffic from Revproxy"
@@ -132,7 +133,8 @@ ingress {
   tags {
     responsible = "Matthias Malzahn"
     mm_belong = "${var.tag_mm_belong}"
-       terraform = "true"
+    terraform = "true"
+    Name = "SG_HTTPS_IN_from_Revproxy"
   }
 }
 resource "aws_security_group" "SG_SSH_IN_from_anywhere" {
@@ -157,6 +159,7 @@ resource "aws_security_group" "SG_SSH_IN_from_anywhere" {
     responsible = "Matthias Malzahn"
     mm_belong = "${var.tag_mm_belong}"
     terraform = "true"
+    Name = "SG_SSH_IN_from_anywhere"
   }
 }
 resource "aws_security_group" "SG_SSH_IN_from_Jumphost" {
@@ -181,5 +184,6 @@ resource "aws_security_group" "SG_SSH_IN_from_Jumphost" {
     responsible = "Matthias Malzahn"
     mm_belong = "${var.tag_mm_belong}"
     terraform = "true"
+    Name = "SG_SSH_IN_from_Jumphost"
   }
 }
