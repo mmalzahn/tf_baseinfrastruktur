@@ -4,7 +4,8 @@ resource "aws_vpc" "DemoVPC" {
    enable_dns_support = "true"
 
    tags {
-       Name = "DMZ1"
+       Name = "DEMO VPC"
+       terraform = "true"
        responsible = "Matthias Malzahn"
        mm_belong = "${var.tag_mm_belong}"
    }

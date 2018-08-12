@@ -1,5 +1,5 @@
 provider "aws" {
-   region = "eu-west-1"
+   region = "${var.aws_region}"
    shared_credentials_file = "C:/Users/matthias/.aws/credentials"
    profile = "tfinfrauser"
 }
@@ -13,6 +13,7 @@ resource "aws_subnet" "dmz1" {
      Name = "DMZ - AZ1"
      responsible = "Matthias Malzahn"
        mm_belong = "${var.tag_mm_belong}"
+       terraform = "true"
    }
 }
 resource "aws_subnet" "dmz2" {
@@ -24,6 +25,7 @@ resource "aws_subnet" "dmz2" {
      Name = "DMZ - AZ2"
      responsible = "Matthias Malzahn"
      mm_belong = "${var.tag_mm_belong}"
+       terraform = "true"
    }
 }
 resource "aws_subnet" "dmz3" {
@@ -35,39 +37,43 @@ resource "aws_subnet" "dmz3" {
      Name = "DMZ - AZ3"
      responsible = "Matthias Malzahn"
      mm_belong = "${var.tag_mm_belong}"
+       terraform = "true"
    }
 }
 resource "aws_subnet" "Backend1" {
    vpc_id = "${aws_vpc.DemoVPC.id}"
    cidr_block = "${cidrsubnet(var.vpc_cdir, 8, 110)}"
    map_public_ip_on_launch = "false"
-   availability_zone = "eu-west-1a"
+   availability_zone = "${data.aws_availability_zones.azs.names[0]}"
    tags {
      Name = "Backend - AZ1"
      responsible = "Matthias Malzahn"
        mm_belong = "${var.tag_mm_belong}"
+       terraform = "true"
    }
 }
 resource "aws_subnet" "Backend2" {
    vpc_id = "${aws_vpc.DemoVPC.id}"
    cidr_block = "${cidrsubnet(var.vpc_cdir, 8, 120)}"
    map_public_ip_on_launch = "false"
-   availability_zone = "eu-west-1b"
+   availability_zone = "${data.aws_availability_zones.azs.names[1]}"
    tags {
      Name = "Backend - AZ2"
      responsible = "Matthias Malzahn"
      mm_belong = "${var.tag_mm_belong}"
+       terraform = "true"
    }
 }
 resource "aws_subnet" "Backend3" {
    vpc_id = "${aws_vpc.DemoVPC.id}"
    cidr_block = "${cidrsubnet(var.vpc_cdir, 8, 130)}"
    map_public_ip_on_launch = "false"
-   availability_zone = "eu-west-1c"
+   availability_zone = "${data.aws_availability_zones.azs.names[2]}"
    tags {
      Name = "Backend - AZ3"
      responsible = "Matthias Malzahn"
      mm_belong = "${var.tag_mm_belong}"
+       terraform = "true"
    }
 }
 
@@ -77,6 +83,7 @@ resource "aws_internet_gateway" "aws_IGW" {
         Name = "IGW - Demo VPC"
         responsible = "Matthias Malzahn"
         mm_belong = "${var.tag_mm_belong}"
+       terraform = "true"
     }
 }
 
@@ -85,6 +92,7 @@ resource "aws_eip" "nat_gw_eip" {
     Name = "NAT GW DMZ1"
     responsible = "Matthias Malzahn"
     mm_belong = "${var.tag_mm_belong}"
+       terraform = "true"
   }
 }
 
@@ -96,6 +104,7 @@ resource "aws_nat_gateway" "aws_dmz1_nat_gw" {
     Name = "NAT GW DMZ1"
     responsible = "Matthias Malzahn"
     mm_belong = "${var.tag_mm_belong}"
+       terraform = "true"
   }
   depends_on =["aws_eip.nat_gw_eip"]
 }
@@ -110,6 +119,7 @@ resource "aws_route_table" "RT_DMZ" {
     responsible = "Matthias Malzahn"
     mm_belong = "${var.tag_mm_belong}"
     Name = "RT DMZ1-3"
+       terraform = "true"
   }
 }
 
@@ -123,6 +133,7 @@ resource "aws_route_table" "RT_Backend" {
     responsible = "Matthias Malzahn"
     mm_belong = "${var.tag_mm_belong}"
     Name = "RT Backend1-3"
+       terraform = "true"
   }
 }
 
@@ -157,6 +168,7 @@ resource "aws_efs_file_system" "efs_dockerStoreDmz" {
   tags {
     responsible = "Matthias Malzahn"
     mm_belong = "${var.tag_mm_belong}"
+       terraform = "true"
   }
 }
 
@@ -181,6 +193,7 @@ resource "aws_efs_file_system" "efs_dockerStoreBackend" {
   tags {
     responsible = "Matthias Malzahn"
     mm_belong = "${var.tag_mm_belong}"
+       terraform = "true"
   }
 }
 

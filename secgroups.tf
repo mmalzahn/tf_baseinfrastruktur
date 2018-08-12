@@ -19,6 +19,7 @@ resource "aws_security_group" "SG_HTTPS_IN" {
   tags {
     responsible = "Matthias Malzahn"
     mm_belong = "${var.tag_mm_belong}"
+       terraform = "true"
   }
 }
 
