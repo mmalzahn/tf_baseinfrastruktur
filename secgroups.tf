@@ -29,6 +29,57 @@ ingress {
   }
 }
 
+resource "aws_security_group" "SG_TCP444-445Stream_IN_anywhere" {
+  name        = "SG_TCP444-445Stream_IN_anywhere"
+  description = "Allow Port444-445 TCP Stream inbound traffic"
+  vpc_id      = "${aws_vpc.DemoVPC.id}"
+
+  ingress {
+    from_port   = 444
+    to_port     = 445
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port       = 0
+    to_port         = 65534
+    protocol        = "tcp"
+    cidr_blocks     = ["0.0.0.0/0"]
+  }
+  
+  tags {
+    responsible = "Matthias Malzahn"
+    mm_belong = "${var.tag_mm_belong}"
+       terraform = "true"
+  }
+}
+
+resource "aws_security_group" "SG_TCP444-445Stream_IN_from_Revproxy" {
+  name        = "SG_TCP444-445Stream_IN_from_Revproxy"
+  description = "Allow Port 444-445 TCP Stream inbound traffic from Revproxy"
+  vpc_id      = "${aws_vpc.DemoVPC.id}"
+
+  ingress {
+    from_port   = 444
+    to_port     = 445
+    protocol    = "tcp"
+    security_groups = ["${aws_security_group.SG_TCP444-445Stream_IN_anywhere.id}"]
+  }
+
+  egress {
+    from_port       = 0
+    to_port         = 65534
+    protocol        = "tcp"
+    cidr_blocks     = ["0.0.0.0/0"]
+  }
+  
+  tags {
+    responsible = "Matthias Malzahn"
+    mm_belong = "${var.tag_mm_belong}"
+       terraform = "true"
+  }
+}
+
 resource "aws_security_group" "SG_EFS_IN_FROM_VPC" {
   name        = "SG_EFS_IN_VPC"
   description = "Allow EFS traffic from VPC"
