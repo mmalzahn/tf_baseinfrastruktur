@@ -8,31 +8,23 @@
 # DESCRIPTION
 # }
 # 
-# variable "key_name" {
-#   description = "Desired name of AWS key pair"
-# }
 # 
-# variable "aws_region" {
-#   description = "AWS region to launch servers."
-#   default     = "us-west-2"
-# }
-# 
-# # Ubuntu Precise 12.04 LTS (x64)
-# variable "aws_amis" {
-#   default = {
-#     eu-west-1 = "ami-674cbc1e"
-#     us-east-1 = "ami-1d4e7a66"
-#     us-west-1 = "ami-969ab1f6"
-#     us-west-2 = "ami-8803e0f0"
-#   }
-# }
+variable "aws_region" {
+  description = "AWS region to launch servers."
+  default     = "eu-west-1"
+}
+
+
+variable "aws_amis" {
+  default = {
+    eu-west-1 = "ami-e4515e0e"
+    eu-west-2 = "ami-b2b55cd5"
+    us-east-2 = "ami-40142d25"
+  }
+}
 
 variable "vpc_cdir" {
    default = "10.20.0.0/16"
-}
-
-variable "aws_region" {
-  default = "eu-west-1"
 }
 
 variable "tag_mm_belong" {
