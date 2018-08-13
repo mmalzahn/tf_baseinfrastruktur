@@ -41,6 +41,12 @@ resource "aws_security_group" "SG_TCP444-445Stream_IN_anywhere" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  ingress {
+    from_port   = 81
+    to_port     = 81
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
   egress {
     from_port       = 0
     to_port         = 65534
@@ -63,6 +69,12 @@ resource "aws_security_group" "SG_TCP444-445Stream_IN_from_Revproxy" {
   ingress {
     from_port   = 444
     to_port     = 445
+    protocol    = "tcp"
+    security_groups = ["${aws_security_group.SG_TCP444-445Stream_IN_anywhere.id}"]
+  }
+  ingress {
+    from_port   = 81
+    to_port     = 81
     protocol    = "tcp"
     security_groups = ["${aws_security_group.SG_TCP444-445Stream_IN_anywhere.id}"]
   }

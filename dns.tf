@@ -34,3 +34,13 @@ resource "aws_route53_record" "internal_internerDockerhost" {
   records =["${aws_instance.internerDockerhost.private_ip}"]
   zone_id = "${data.aws_route53_zone.dca_internal_domain.zone_id}"
 }
+
+resource "aws_route53_record" "elb_demo_extern" {
+  allow_overwrite = "true"
+  depends_on = ["aws_lb.externerDemoElb"]
+  name = "elbdemoextern"
+  ttl = "60"
+  type = "CNAME"
+  records =["${aws_lb.externerDemoElb.dns_name}"]
+  zone_id = "${data.aws_route53_zone.dca_poc_domain.zone_id}"
+}
