@@ -183,6 +183,7 @@ resource "aws_efs_file_system" "efs_dockerStoreDmz" {
     responsible = "${var.tag_responsibel}"
     mm_belong   = "${var.tag_mm_belong}"
     terraform   = "true"
+    Name = "DMZ Dockerstorage"
   }
 }
 
@@ -252,15 +253,3 @@ data "aws_route53_zone" "dca_internal_domain" {
   name         = "dca.internal."
   private_zone = "true"
 }
-
-# variable "public_key_path" {
-#   description = <<DESCRIPTION
-# Path to the SSH public key to be used for authentication.
-# Ensure this keypair is added to your local SSH agent so provisioners can
-# connect.
-# 
-# Example: ~/.ssh/terraform.pub
-# DESCRIPTION
-# }
-# 
-# 
