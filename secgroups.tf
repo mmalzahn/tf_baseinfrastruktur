@@ -1,4 +1,3 @@
-
 resource "aws_security_group" "SG_HTTPS_IN_anywhere" {
   name        = "SG_HTTPS_IN"
   description = "Allow HTTPS inbound traffic"
@@ -247,5 +246,32 @@ resource "aws_security_group" "SG_SSH_IN_from_Jumphost" {
     mm_belong   = "${var.tag_mm_belong}"
     terraform   = "true"
     Name        = "SG_SSH_IN_from_Jumphost"
+  }
+}
+
+resource "aws_security_group" "SG_DockerSocket_IN_from_Jumphost" {
+  name        = "SG_DockerSocket_IN_from_Jumphost"
+  description = "Allow SSH inbound traffic from Jumphost"
+  vpc_id      = "${aws_vpc.DemoVPC.id}"
+
+  ingress {
+    from_port       = 2375
+    to_port         = 2376
+    protocol        = "tcp"
+    security_groups = ["${aws_security_group.SG_SSH_IN_from_anywhere.id}"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 65534
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags {
+    responsible = "${var.tag_responsibel}"
+    mm_belong   = "${var.tag_mm_belong}"
+    terraform   = "true"
+    Name        = "SG_DockerSocket_IN_from_Jumphost"
   }
 }

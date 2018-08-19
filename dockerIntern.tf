@@ -17,6 +17,7 @@ resource "aws_instance" "internerDockerhost" {
     "${aws_security_group.SG_SSH_IN_from_Jumphost.id}",
     "${aws_security_group.SG_TCP444-445Stream_IN_from_Revproxy.id}",
     "${aws_security_group.SG_HTTPS_IN_from_VPC.id}",
+    "${aws_security_group.SG_DockerSocket_IN_from_Jumphost.id}",
   ]
 
   depends_on = [
@@ -41,7 +42,7 @@ resource "aws_efs_file_system" "efs_dockerStoreBackend" {
     responsible = "${var.tag_responsibel}"
     mm_belong   = "${var.tag_mm_belong}"
     terraform   = "true"
-    Name = "Backend Dockerstorage"
+    Name        = "Backend Dockerstorage"
   }
 }
 

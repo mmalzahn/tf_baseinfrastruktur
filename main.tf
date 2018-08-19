@@ -3,6 +3,14 @@ provider "aws" {
   shared_credentials_file = "C:/Users/matthias/.aws/credentials"
   profile                 = "tfinfrauser"
 }
+terraform {
+  backend "s3" {
+    bucket = "mm-terraform-remote-state-storage"
+    key    = "terraform/base/terraform.tfstate"
+    dynamodb_table ="mm-terraform-state-lock-dynamo"
+    region = "eu-west-1"
+  }
+}
 
 resource "aws_lb" "externerDemoElb" {
   name               = "externerDemoElb"
@@ -108,82 +116,12 @@ resource "aws_lb_target_group_attachment" "addDmzDocker2TG_dcaHTTP" {
   target_group_arn = "${aws_lb_target_group.TG_DCA_HTTP.arn}"
 }
 
-resource "aws_instance" "nginx_DMZ" {
-  ami           = "${lookup(var.aws_amis, var.aws_region)}"
-  instance_type = "t2.micro"
-  subnet_id     = "${aws_subnet.dmz1.id}"
-
-  vpc_security_group_ids = [
-    "${aws_security_group.SG_HTTPS_IN_anywhere.id}",
-    "${aws_security_group.SG_SSH_IN_from_Jumphost.id}",
-    "${aws_security_group.SG_TCP444-445Stream_IN_anywhere.id}",
-  ]
-
-  depends_on                  = ["aws_efs_mount_target.EFS_DMZ1", "aws_internet_gateway.aws_IGW"]
-  associate_public_ip_address = "true"
-  key_name                    = "CSA-DemoVPCKey1"
-  user_data                   = "${data.template_file.installscript_dmz.rendered}"
-
-  tags {
-    Name        = "DMZ-Proxy"
-    responsible = "${var.tag_responsibel}"
-    mm_belong   = "${var.tag_mm_belong}"
-    terraform   = "true"
-  }
-}
-
-data "template_file" "installscript_dmz" {
-  template = "${file("installdocker.tpl")}"
-  vars {
-      file_system_id = "${aws_efs_file_system.efs_dockerStoreDmz.id}"
-      efs_directory = "/efs"
-  }
-}
-
-
-# resource "aws_instance" "internerDockerhost2" {
-#    ami = "${lookup(var.aws_amis, var.aws_region)}"
-#    instance_type = "t2.micro"
-#    subnet_id = "${aws_subnet.Backend2.id}"
-#    vpc_security_group_ids = [
-#     "${aws_security_group.SG_HTTPS_IN_from_Revproxy.id}",
-#     "${aws_security_group.SG_SSH_IN_from_Jumphost.id}",
-#     "${aws_security_group.SG_TCP444-445Stream_IN_from_Revproxy.id}",
-#     "${aws_security_group.SG_HTTPS_IN_from_VPC.id}"
-#     ]
-#    associate_public_ip_address ="false"
-#    key_name = "CSA-DemoVPCKey1"
-#    user_data = "${file("./installdocker.sh")}"
-#    tags {
-#      Name = "interner Dockerhost"
-#      responsible = "${var.tag_responsibel}"
-#      mm_belong = "${var.tag_mm_belong}"
-#        terraform = "true"
-#    }
-# }
-# 
-resource "aws_instance" "jumphost_DMZ" {
-  ami                         = "${lookup(var.aws_amis, var.aws_region)}"
-  instance_type               = "t2.micro"
-  subnet_id                   = "${aws_subnet.dmz1.id}"
-  vpc_security_group_ids      = ["${aws_security_group.SG_SSH_IN_from_anywhere.id}"]
-  key_name                    = "CSA-DemoVPCKey1"
-  associate_public_ip_address = "true"
-
-  tags {
-    Name        = "DMZ-LinuxJumphost"
-    responsible = "${var.tag_responsibel}"
-    mm_belong   = "${var.tag_mm_belong}"
-    terraform   = "true"
-  }
-}
-
 resource "aws_efs_file_system" "efs_dockerStoreDmz" {
   tags {
     responsible = "${var.tag_responsibel}"
     mm_belong   = "${var.tag_mm_belong}"
     terraform   = "true"
-    Name = "DMZ Dockerstorage"
+    Name        = "DMZ Dockerstorage"
   }
 }
 

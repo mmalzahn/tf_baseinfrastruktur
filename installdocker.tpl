@@ -7,8 +7,8 @@ packages:
 - docker
 
 runcmd:
-- mkdir -p $${efs_directory}
-- echo "$${file_system_id}:/ $${efs_directory} efs tls,_netdev" >> /etc/fstab
+- mkdir -p ${efs_directory}
+- echo "${file_system_id}:/ ${efs_directory} efs tls,_netdev" >> /etc/fstab
 - mount -a -t efs defaults
 - service docker start
 - curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
