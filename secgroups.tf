@@ -23,13 +23,7 @@ resource "aws_security_group" "SG_HTTPS_IN_anywhere" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  tags {
-    responsible = "${var.tag_responsibel}"
-    mm_belong   = "${var.tag_mm_belong}"
-    terraform   = "true"
-    Name        = "SG_HTTPS_IN_anywhere"
-  }
+  tags = "${merge(local.common_tags,map("Name", "SG_HTTPS_IN_anywhere"))}"
 }
 
 resource "aws_security_group" "SG_TCP444-445Stream_IN_anywhere" {
@@ -57,13 +51,7 @@ resource "aws_security_group" "SG_TCP444-445Stream_IN_anywhere" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  tags {
-    responsible = "${var.tag_responsibel}"
-    mm_belong   = "${var.tag_mm_belong}"
-    terraform   = "true"
-    Name        = "SG_TCP444-445Stream_IN_anywhere"
-  }
+  tags = "${merge(local.common_tags,map("Name", "SG_TCP444-445Stream_IN_anywhere"))}"
 }
 
 resource "aws_security_group" "SG_TCP444-445Stream_IN_from_Revproxy" {
@@ -91,13 +79,7 @@ resource "aws_security_group" "SG_TCP444-445Stream_IN_from_Revproxy" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  tags {
-    responsible = "${var.tag_responsibel}"
-    mm_belong   = "${var.tag_mm_belong}"
-    terraform   = "true"
-    Name        = "SG_TCP444-445Stream_IN_from_Revproxy"
-  }
+  tags = "${merge(local.common_tags,map("Name", "SG_TCP444-445Stream_IN_from_Revproxy"))}"
 }
 
 resource "aws_security_group" "SG_EFS_IN_FROM_VPC" {
@@ -118,13 +100,7 @@ resource "aws_security_group" "SG_EFS_IN_FROM_VPC" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  tags {
-    responsible = "${var.tag_responsibel}"
-    mm_belong   = "${var.tag_mm_belong}"
-    terraform   = "true"
-    Name        = "SG_EFS_IN_VPC"
-  }
+  tags = "${merge(local.common_tags,map("Name", "SG_EFS_IN_VPC"))}"
 }
 
 resource "aws_security_group" "SG_HTTPS_IN_from_Revproxy" {
@@ -152,13 +128,7 @@ resource "aws_security_group" "SG_HTTPS_IN_from_Revproxy" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  tags {
-    responsible = "${var.tag_responsibel}"
-    mm_belong   = "${var.tag_mm_belong}"
-    terraform   = "true"
-    Name        = "SG_HTTPS_IN_from_Revproxy"
-  }
+  tags = "${merge(local.common_tags,map("Name", "SG_HTTPS_IN_from_Revproxy"))}"
 }
 
 resource "aws_security_group" "SG_HTTPS_IN_from_VPC" {
@@ -186,13 +156,7 @@ resource "aws_security_group" "SG_HTTPS_IN_from_VPC" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  tags {
-    responsible = "${var.tag_responsibel}"
-    mm_belong   = "${var.tag_mm_belong}"
-    terraform   = "true"
-    Name        = "SG_HTTPS_IN_from_VPC"
-  }
+  tags = "${merge(local.common_tags,map("Name", "SG_HTTPS_IN_from_VPC"))}"
 }
 
 resource "aws_security_group" "SG_SSH_IN_from_anywhere" {
@@ -213,13 +177,7 @@ resource "aws_security_group" "SG_SSH_IN_from_anywhere" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  tags {
-    responsible = "${var.tag_responsibel}"
-    mm_belong   = "${var.tag_mm_belong}"
-    terraform   = "true"
-    Name        = "SG_SSH_IN_from_anywhere"
-  }
+  tags = "${merge(local.common_tags,map("Name", "SG_SSH_IN_from_anywhere"))}"
 }
 
 resource "aws_security_group" "SG_SSH_IN_from_Jumphost" {
@@ -240,13 +198,7 @@ resource "aws_security_group" "SG_SSH_IN_from_Jumphost" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  tags {
-    responsible = "${var.tag_responsibel}"
-    mm_belong   = "${var.tag_mm_belong}"
-    terraform   = "true"
-    Name        = "SG_SSH_IN_from_Jumphost"
-  }
+  tags = "${merge(local.common_tags,map("Name", "SG_SSH_IN_from_Jumphost"))}"
 }
 
 resource "aws_security_group" "SG_DockerSocket_IN_from_Jumphost" {
@@ -267,11 +219,5 @@ resource "aws_security_group" "SG_DockerSocket_IN_from_Jumphost" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  tags {
-    responsible = "${var.tag_responsibel}"
-    mm_belong   = "${var.tag_mm_belong}"
-    terraform   = "true"
-    Name        = "SG_DockerSocket_IN_from_Jumphost"
-  }
+  tags = "${merge(local.common_tags,map("Name", "SG_DockerSocket_IN_from_Jumphost"))}"
 }

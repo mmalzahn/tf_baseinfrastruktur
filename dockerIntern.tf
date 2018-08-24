@@ -10,7 +10,7 @@ data "template_file" "installscript_intern" {
 resource "aws_instance" "internerDockerhost" {
   ami           = "${lookup(var.aws_amis, var.aws_region)}"
   instance_type = "t2.micro"
-  subnet_id     = "${aws_subnet.Backend1.id}"
+  subnet_id     = "${aws_subnet.Backend.0.id}"
 
   vpc_security_group_ids = [
     "${aws_security_group.SG_HTTPS_IN_from_Revproxy.id}",
@@ -21,47 +21,14 @@ resource "aws_instance" "internerDockerhost" {
   ]
 
   depends_on = [
-    "aws_efs_mount_target.EFS_Backend1",
+    "aws_efs_mount_target.EFS_Backend",
     "aws_nat_gateway.aws_dmz1_nat_gw",
   ]
 
   associate_public_ip_address = "false"
   key_name                    = "CSA-DemoVPCKey1"
   user_data                   = "${data.template_file.installscript_intern.rendered}"
-
-  tags {
-    Name        = "interner Dockerhost"
-    responsible = "${var.tag_responsibel}"
-    mm_belong   = "${var.tag_mm_belong}"
-    terraform   = "true"
-  }
-}
-
-resource "aws_efs_file_system" "efs_dockerStoreBackend" {
-  tags {
-    responsible = "${var.tag_responsibel}"
-    mm_belong   = "${var.tag_mm_belong}"
-    terraform   = "true"
-    Name        = "Backend Dockerstorage"
-  }
-}
-
-resource "aws_efs_mount_target" "EFS_Backend1" {
-  file_system_id  = "${aws_efs_file_system.efs_dockerStoreBackend.id}"
-  subnet_id       = "${aws_subnet.Backend1.id}"
-  security_groups = ["${aws_security_group.SG_EFS_IN_FROM_VPC.id}"]
-}
-
-resource "aws_efs_mount_target" "EFS_Backend2" {
-  file_system_id  = "${aws_efs_file_system.efs_dockerStoreBackend.id}"
-  subnet_id       = "${aws_subnet.Backend2.id}"
-  security_groups = ["${aws_security_group.SG_EFS_IN_FROM_VPC.id}"]
-}
-
-resource "aws_efs_mount_target" "EFS_Backend3" {
-  file_system_id  = "${aws_efs_file_system.efs_dockerStoreBackend.id}"
-  subnet_id       = "${aws_subnet.Backend3.id}"
-  security_groups = ["${aws_security_group.SG_EFS_IN_FROM_VPC.id}"]
+  tags = "${merge(local.common_tags,map("Name", "interner Dockerhost"))}"
 }
 
 resource "aws_route53_record" "dca_dockerhost_intern" {

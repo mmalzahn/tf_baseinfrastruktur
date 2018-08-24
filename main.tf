@@ -3,12 +3,13 @@ provider "aws" {
   shared_credentials_file = "C:/Users/matthias/.aws/credentials"
   profile                 = "tfinfrauser"
 }
+
 terraform {
   backend "s3" {
-    bucket = "mm-terraform-remote-state-storage"
-    key    = "terraform/base/terraform.tfstate"
-    dynamodb_table ="mm-terraform-state-lock-dynamo"
-    region = "eu-west-1"
+    bucket         = "mm-terraform-remote-state-storage"
+    key            = "selfinfra.state"
+    dynamodb_table = "mm-terraform-state-lock-dynamo"
+    region         = "eu-west-1"
   }
 }
 
@@ -16,13 +17,9 @@ resource "aws_lb" "externerDemoElb" {
   name               = "externerDemoElb"
   internal           = "false"
   load_balancer_type = "network"
-  subnets            = ["${aws_subnet.dmz1.id}", "${aws_subnet.dmz2.id}", "${aws_subnet.dmz3.id}"]
+  subnets            = ["${aws_subnet.DMZ.*.id}"]
 
-  tags {
-    responsible = "${var.tag_responsibel}"
-    mm_belong   = "${var.tag_mm_belong}"
-    terraform   = "true"
-  }
+  tags = "${local.common_tags}"
 }
 
 resource "aws_lb_listener" "demoHTTPS" {
@@ -43,6 +40,7 @@ resource "aws_lb_target_group" "TG_Demo_HTTPS" {
   proxy_protocol_v2 = "true"
   target_type       = "instance"
   vpc_id            = "${aws_vpc.DemoVPC.id}"
+  tags              = "${local.common_tags}"
 }
 
 resource "aws_lb_target_group_attachment" "addDmzDocker2TG_demoHTTPS" {
@@ -55,13 +53,8 @@ resource "aws_lb" "externerDCAElb" {
   name               = "externerDCAElb"
   internal           = "false"
   load_balancer_type = "network"
-  subnets            = ["${aws_subnet.dmz1.id}", "${aws_subnet.dmz2.id}", "${aws_subnet.dmz3.id}"]
-
-  tags {
-    responsible = "${var.tag_responsibel}"
-    mm_belong   = "${var.tag_mm_belong}"
-    terraform   = "true"
-  }
+  subnets            = ["${aws_subnet.DMZ.*.id}"]
+  tags               = "${local.common_tags}"
 }
 
 resource "aws_lb_listener" "dcaHTTP" {
@@ -93,6 +86,7 @@ resource "aws_lb_target_group" "TG_DCA_HTTP" {
   proxy_protocol_v2 = "true"
   target_type       = "instance"
   vpc_id            = "${aws_vpc.DemoVPC.id}"
+  tags              = "${local.common_tags}"
 }
 
 resource "aws_lb_target_group" "TG_DCA_HTTPS" {
@@ -102,6 +96,7 @@ resource "aws_lb_target_group" "TG_DCA_HTTPS" {
   proxy_protocol_v2 = "true"
   target_type       = "instance"
   vpc_id            = "${aws_vpc.DemoVPC.id}"
+  tags              = "${local.common_tags}"
 }
 
 resource "aws_lb_target_group_attachment" "addDmzDocker2TG_dcaHTTPS" {
@@ -114,33 +109,6 @@ resource "aws_lb_target_group_attachment" "addDmzDocker2TG_dcaHTTP" {
   target_id        = "${aws_instance.nginx_DMZ.id}"
   port             = 81
   target_group_arn = "${aws_lb_target_group.TG_DCA_HTTP.arn}"
-}
-
-resource "aws_efs_file_system" "efs_dockerStoreDmz" {
-  tags {
-    responsible = "${var.tag_responsibel}"
-    mm_belong   = "${var.tag_mm_belong}"
-    terraform   = "true"
-    Name        = "DMZ Dockerstorage"
-  }
-}
-
-resource "aws_efs_mount_target" "EFS_DMZ1" {
-  file_system_id  = "${aws_efs_file_system.efs_dockerStoreDmz.id}"
-  subnet_id       = "${aws_subnet.dmz1.id}"
-  security_groups = ["${aws_security_group.SG_EFS_IN_FROM_VPC.id}"]
-}
-
-resource "aws_efs_mount_target" "EFS_DMZ2" {
-  file_system_id  = "${aws_efs_file_system.efs_dockerStoreDmz.id}"
-  subnet_id       = "${aws_subnet.dmz2.id}"
-  security_groups = ["${aws_security_group.SG_EFS_IN_FROM_VPC.id}"]
-}
-
-resource "aws_efs_mount_target" "EFS_DMZ3" {
-  file_system_id  = "${aws_efs_file_system.efs_dockerStoreDmz.id}"
-  subnet_id       = "${aws_subnet.dmz3.id}"
-  security_groups = ["${aws_security_group.SG_EFS_IN_FROM_VPC.id}"]
 }
 
 resource "aws_route53_record" "dca_jumphost" {
