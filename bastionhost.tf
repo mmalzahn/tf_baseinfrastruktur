@@ -5,6 +5,7 @@
    subnet_id                   = "${aws_subnet.DMZ.0.id}"
    vpc_security_group_ids      = ["${aws_security_group.SG_SSH_IN_from_anywhere.id}"]
    key_name                    = "${var.aws_key_name}"
+   user_data="${file("updateuserdata.tpl")}"
    associate_public_ip_address = "true"
   lifecycle {
     ignore_changes = ["tags.tf_created"]
