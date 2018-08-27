@@ -29,8 +29,14 @@ variable "tag_responsibel" {
   default = "Matthias Malzahn"
 }
 
-# variable "config_backends" {
-#   type = "list"
-#   default = "${list("", ...)}"
-# }
+variable "aws_key_name" {
+  default ="CSA-DemoVPCKey1"
+}
 
+variable "backend_key" {
+  default = "baseinfrastruktur.state"
+}
+
+variable "laufzeit_tage" {
+  default = "43200m"
+}
