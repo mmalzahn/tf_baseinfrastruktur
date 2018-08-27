@@ -1,1 +1,1 @@
-terraform
+Basisconfig für eine AWS Infrastruktur
