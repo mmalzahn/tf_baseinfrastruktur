@@ -9,7 +9,7 @@ resource "aws_vpc" "mainvpc" {
 
   tags = "${merge(local.common_tags,
             map(
-              "Name", "VPC - ${var.tag_mm_belong}"
+              "Name", "${lookup(local.common_tags,"tf_project_name")}_${terraform.workspace}_VPC"
               )
               )}"
 }
@@ -27,7 +27,7 @@ resource "aws_subnet" "DMZ" {
 
   tags = "${merge(local.common_tags,
             map(
-              "Name", "DMZ ${count.index} - ${data.aws_availability_zones.azs.names[count.index]} - ${cidrsubnet(var.vpc_cdir, 8, count.index + 20)}"
+              "Name", "DMZ_${count.index}_${data.aws_availability_zones.azs.names[count.index]}_${replace(replace(cidrsubnet(var.vpc_cdir, 8, count.index + 20),".","-"),"/","_")}"
               )
               )}"
 }
@@ -45,7 +45,7 @@ resource "aws_subnet" "Backend" {
 
   tags = "${merge(local.common_tags,
             map(
-              "Name", "Backend ${count.index} - ${data.aws_availability_zones.azs.names[count.index]} - ${cidrsubnet(var.vpc_cdir, 8, count.index + 20)}"
+              "Name", "Backend_${count.index}_${data.aws_availability_zones.azs.names[count.index]}_${replace(replace(cidrsubnet(var.vpc_cdir, 8, count.index + 20),".","-"),"/","_")}"
               )
               )}"
 }
@@ -59,26 +59,29 @@ resource "aws_internet_gateway" "aws_IGW" {
 
   tags = "${merge(local.common_tags,
             map(
-              "Name", "IGW - ${lookup(local.common_tags,"tf_project")}"
+              "Name", "IGW_${lookup(local.common_tags,"tf_project_name")}"
               )
               )}"
 }
 
 resource "aws_eip" "nat_gw_eip" {
+  count = 1
+
   lifecycle {
     ignore_changes = ["tags.tf_created"]
   }
 
   tags = "${merge(local.common_tags,
             map(
-              "Name", "EIP for NAT GW - ${lookup(local.common_tags,"tf_project")}"
+              "Name", "EIP_NAT_GW_${lookup(local.common_tags,"tf_project_name")}_${count.index}"
               )
               )}"
 }
 
 resource "aws_nat_gateway" "aws_dmz1_nat_gw" {
-  allocation_id = "${aws_eip.nat_gw_eip.id}"
-  subnet_id     = "${aws_subnet.DMZ.0.id}"
+  count         = 1
+  allocation_id = "${element(aws_eip.nat_gw_eip.*.id,count.index)}"
+  subnet_id     = "${element(aws_subnet.DMZ.*.id,count.index)}"
 
   lifecycle {
     ignore_changes = ["tags.tf_created"]
@@ -86,7 +89,7 @@ resource "aws_nat_gateway" "aws_dmz1_nat_gw" {
 
   tags = "${merge(local.common_tags,
             map(
-              "Name", "NAT GW DMZ1 - ${lookup(local.common_tags,"tf_project")}"
+              "Name", "NATGW_${lookup(local.common_tags,"tf_project_name")}_${count.index +1}"
               )
               )}"
 
@@ -107,7 +110,7 @@ resource "aws_route_table" "RT_DMZ" {
 
   tags = "${merge(local.common_tags,
             map(
-              "Name", "RT DMZ - ${lookup(local.common_tags,"tf_project")}"
+              "Name", "RT DMZ - ${lookup(local.common_tags,"tf_project_name")}"
               )
               )}"
 }
@@ -126,7 +129,7 @@ resource "aws_route_table" "RT_Backend" {
 
   tags = "${merge(local.common_tags,
             map(
-              "Name", "RT Backend - ${lookup(local.common_tags,"tf_project")}"
+              "Name", "RT Backend - ${lookup(local.common_tags,"tf_project_name")}"
               )
               )}"
 }
