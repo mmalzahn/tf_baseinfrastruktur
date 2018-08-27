@@ -1,13 +1,14 @@
 locals {
   common_tags {
-    responsible = "${var.tag_responsibel}"
-    tf_managed   = "true"
-    tf_project = "base:vpc"
-    tf_statefile = "terraform"
+    responsible    = "${var.tag_responsibel}"
+    tf_managed     = "true"
+    tf_project     = "dca:${terraform.workspace}:base:vpc"
+    tf_statefile   = "${local.workspace_key}"
     tf_environment = "${terraform.workspace}"
-    tf_created = "${timestamp()}"
-    tf_needuntil = "${timeadd(timestamp(), var.laufzeit_tage)}"
+    tf_created     = "${timestamp()}"
+    tf_runtime     = "${var.laufzeit_tage}"
   }
+
   workspace_key = "env:/${terraform.workspace}/${var.backend_key}"
 }
 

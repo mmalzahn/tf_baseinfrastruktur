@@ -3,7 +3,6 @@ variable "az_count" {
   default = 3
 }
 
-
 variable "aws_region" {
   description = "AWS region to launch servers."
   default     = "eu-west-1"
@@ -38,5 +37,5 @@ variable "backend_key" {
 }
 
 variable "laufzeit_tage" {
-  default = "43200m"
+  default = "60"
 }
