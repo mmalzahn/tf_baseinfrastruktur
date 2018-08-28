@@ -4,6 +4,14 @@ variable "tag_responsibel" {}
 variable "aws_key_name" {}
 variable "project_name" {}
 
+variable "ssh_pubkey_bucket" {
+  default = "dca-pubkey"
+}
+
+variable "ssh_pubkey_prefix" {
+  default = "public-keys/"
+}
+
 variable "backend_key" {
   default = "baseinfrastruktur.state"
 }
@@ -15,6 +23,11 @@ variable "laufzeit_tage" {
 variable "az_count" {
   default = "1"
 }
+
+variable "mm_debug" {
+  default = 1
+}
+
 
 variable "aws_amis" {
   default = {

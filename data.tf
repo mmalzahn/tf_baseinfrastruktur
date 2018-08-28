@@ -1,9 +1,9 @@
 locals {
   common_tags {
     responsible     = "${var.tag_responsibel}"
-    tf_managed      = "true"
-    tf_project      = "dca:${terraform.workspace}:base:vpc"
-    tf_project_name = "${var.project_name}"
+    tf_managed      = "1"
+    tf_project      = "dca:${terraform.workspace}:base"
+    tf_project_name = "PR_${replace(var.project_name," ","_")}"
     tf_statefile    = "${local.workspace_key}"
     tf_environment  = "${terraform.workspace}"
     tf_created      = "${timestamp()}"

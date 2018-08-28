@@ -10,6 +10,18 @@ output "vpc_cidr" {
   value = "${aws_vpc.mainvpc.cidr_block}"
 }
 
+output "bastion_iam_user" {
+  value = "${aws_iam_user.bastionIamUser.name}"
+}
+
+output "bastion_ak" {
+  value = "${aws_iam_access_key.bastionIamUser.id}"
+}
+
+output "bastion_sk" {
+  value = "${aws_iam_access_key.bastionIamUser.secret}"
+}
+
 output "bastion_dns" {
   value = "${aws_route53_record.bastionhost.fqdn}"
 }
