@@ -39,6 +39,14 @@ output "subnet_cidrblocks_backend" {
   value = "${aws_subnet.Backend.*.cidr_block}"
 }
 
+output "subnet_ids_servicesbackend" {
+  value = "${aws_subnet.ServicesBackend.*.id}"
+}
+
+output "subnet_cidrblocks_servicesbackend" {
+  value = "${aws_subnet.ServicesBackend.*.cidr_block}"
+}
+
 output "subnet_cidrblocks_dmz" {
   value = "${aws_subnet.DMZ.*.cidr_block}"
 }

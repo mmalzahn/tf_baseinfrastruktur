@@ -45,7 +45,24 @@ resource "aws_subnet" "Backend" {
 
   tags = "${merge(local.common_tags,
             map(
-              "Name", "Backend_${count.index}_${data.aws_availability_zones.azs.names[count.index]}_${replace(replace(cidrsubnet(var.vpc_cdir, 8, count.index + 20),".","-"),"/","_")}"
+              "Name", "Backend_${count.index}_${data.aws_availability_zones.azs.names[count.index]}_${replace(replace(cidrsubnet(var.vpc_cdir, 8, count.index),".","-"),"/","_")}"
+              )
+              )}"
+}
+resource "aws_subnet" "ServicesBackend" {
+  count                   = "${var.az_count}"
+  cidr_block              = "${cidrsubnet(var.vpc_cdir, 8, count.index + 200)}"
+  vpc_id                  = "${aws_vpc.mainvpc.id}"
+  map_public_ip_on_launch = "false"
+  availability_zone       = "${data.aws_availability_zones.azs.names[count.index]}"
+
+  lifecycle {
+    ignore_changes = ["tags.tf_created"]
+  }
+
+  tags = "${merge(local.common_tags,
+            map(
+              "Name", "ServicesBackend_${count.index}_${data.aws_availability_zones.azs.names[count.index]}_${replace(replace(cidrsubnet(var.vpc_cdir, 8, count.index + 200),".","-"),"/","_")}"
               )
               )}"
 }
@@ -143,5 +160,10 @@ resource "aws_route_table_association" "RT_add_DMZ" {
 resource "aws_route_table_association" "RT_add_Backend" {
   count          = "${var.az_count}"
   subnet_id      = "${element(aws_subnet.Backend.*.id,count.index)}"
+  route_table_id = "${aws_route_table.RT_Backend.id}"
+}
+resource "aws_route_table_association" "RT_add_ServicesBackend" {
+  count          = "${var.az_count}"
+  subnet_id      = "${element(aws_subnet.ServicesBackend.*.id,count.index)}"
   route_table_id = "${aws_route_table.RT_Backend.id}"
 }
