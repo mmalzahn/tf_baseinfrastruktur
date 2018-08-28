@@ -13,14 +13,14 @@
 
   tags = "${merge(local.common_tags,
             map(
-              "Name", "DMZ-Linuxbastionhost - ${lookup(local.common_tags,"tf_project")}"
+              "Name", "DMZ_Linuxbastionhost_${lookup(local.common_tags,"tf_project")}"
               )
               )}"
  }
 
 resource "aws_security_group" "SG_SSH_IN_from_anywhere" {
-  name        = "SG_SSH_IN_from_anywhere"
-  description = "Allow SSH inbound traffic from anywhere"
+  name        = "SG_SSH_IN_from_anywhere_${lookup(local.common_tags,"tf_project_name")}"
+  description = "Allow SSH inbound traffic from anywhere for Project ${lookup(local.common_tags,"tf_project_name")}"
   vpc_id      = "${aws_vpc.mainvpc.id}"
 
   ingress {
@@ -43,7 +43,7 @@ resource "aws_security_group" "SG_SSH_IN_from_anywhere" {
 
   tags = "${merge(local.common_tags,
             map(
-              "Name", "SG_SSH_IN_from_anywhere - ${lookup(local.common_tags,"tf_project")}"
+              "Name", "SG_SSH_IN_from_anywhere__${lookup(local.common_tags,"tf_project")}"
               )
               )}"
 }

@@ -110,7 +110,7 @@ resource "aws_route_table" "RT_DMZ" {
 
   tags = "${merge(local.common_tags,
             map(
-              "Name", "RT DMZ - ${lookup(local.common_tags,"tf_project_name")}"
+              "Name", "RT_DMZ_${lookup(local.common_tags,"tf_project_name")}"
               )
               )}"
 }
@@ -129,7 +129,7 @@ resource "aws_route_table" "RT_Backend" {
 
   tags = "${merge(local.common_tags,
             map(
-              "Name", "RT Backend - ${lookup(local.common_tags,"tf_project_name")}"
+              "Name", "RT_Backend_${lookup(local.common_tags,"tf_project_name")}"
               )
               )}"
 }

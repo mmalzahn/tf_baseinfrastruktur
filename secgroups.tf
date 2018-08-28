@@ -1,6 +1,6 @@
 resource "aws_security_group" "SG_HTTPS_IN_anywhere" {
-  name        = "SG_HTTPS_IN"
-  description = "Allow HTTPS inbound traffic"
+  name        = "SG_HTTPS_IN_${lookup(local.common_tags,"tf_project_name")}"
+  description = "Allow HTTPS inbound traffic for Project ${lookup(local.common_tags,"tf_project_name")}"
   vpc_id      = "${aws_vpc.mainvpc.id}"
 
   ingress {
@@ -30,14 +30,14 @@ resource "aws_security_group" "SG_HTTPS_IN_anywhere" {
 
   tags = "${merge(local.common_tags,
             map(
-              "Name", "SG_HTTPS_IN - ${lookup(local.common_tags,"tf_project")}"
+              "Name", "SG_HTTPS_IN_${lookup(local.common_tags,"tf_project_name")}"
               )
               )}"
 }
 
 resource "aws_security_group" "SG_HTTPS_IN_from_VPC" {
-  name        = "SG_HTTPS_IN_from_VPC"
-  description = "Allow HTTPS inbound traffic from VPC"
+  name        = "SG_HTTPS_IN_from_VPC_${lookup(local.common_tags,"tf_project_name")}"
+  description = "Allow HTTPS inbound traffic from VPC for Project ${lookup(local.common_tags,"tf_project_name")}"
   vpc_id      = "${aws_vpc.mainvpc.id}"
 
   ingress {
@@ -67,14 +67,14 @@ resource "aws_security_group" "SG_HTTPS_IN_from_VPC" {
 
   tags = "${merge(local.common_tags,
             map(
-              "Name", "SG_HTTPS_IN_from_VPC - ${lookup(local.common_tags,"tf_project")}"
+              "Name", "SG_HTTPS_IN_from_VPC_${lookup(local.common_tags,"tf_project_name")}"
               )
               )}"
 }
 
-resource "aws_security_group" "SG_SSH_IN_from_Jumphost" {
-  name        = "SG_SSH_IN_from_Jumphost"
-  description = "Allow SSH inbound traffic from Jumphost"
+resource "aws_security_group" "SG_SSH_IN_from_Bastionhost" {
+  name        = "SG_SSH_IN_from_Bastionhost_${lookup(local.common_tags,"tf_project_name")}"
+  description = "Allow SSH inbound traffic from Bastionhost for Project ${lookup(local.common_tags,"tf_project_name")}"
   vpc_id      = "${aws_vpc.mainvpc.id}"
 
   ingress {
@@ -97,14 +97,14 @@ resource "aws_security_group" "SG_SSH_IN_from_Jumphost" {
 
   tags = "${merge(local.common_tags,
             map(
-              "Name", "SG_SSH_IN_from_Jumphost - ${lookup(local.common_tags,"tf_project")}"
+              "Name", "SG_SSH_IN_from_Bastionhost_${lookup(local.common_tags,"tf_project_name")}"
               )
               )}"
 }
 
 resource "aws_security_group" "SG_DockerSocket_IN_from_Bastionhost" {
-  name        = "SG_DockerSocket_IN_from_Bastionhost"
-  description = "Allow SSH inbound traffic from Bastionhost"
+  name        = "SG_DockerSocket_IN_from_Bastionhost_${lookup(local.common_tags,"tf_project_name")}"
+  description = "Allow SSH inbound traffic from Bastionhost for Project ${lookup(local.common_tags,"tf_project_name")}"
   vpc_id      = "${aws_vpc.mainvpc.id}"
 
   ingress {
@@ -127,14 +127,14 @@ resource "aws_security_group" "SG_DockerSocket_IN_from_Bastionhost" {
 
   tags = "${merge(local.common_tags,
             map(
-              "Name", "SG_DockerSocket_IN_from_Bastionhost - ${lookup(local.common_tags,"tf_project")}"
+              "Name", "SG_DockerSocket_IN_from_Bastionhost_${lookup(local.common_tags,"tf_project_name")}"
               )
               )}"
 }
 
 resource "aws_security_group" "SG_RDP_IN_from_Bastionhost" {
-  name        = "SG_RDP_IN_from_Bastionhost"
-  description = "Allow RDP inbound traffic from Bastionhost"
+  name        = "SG_RDP_IN_from_Bastionhost_${lookup(local.common_tags,"tf_project_name")}"
+  description = "Allow RDP inbound traffic from Bastionhost for Project ${lookup(local.common_tags,"tf_project_name")}"
   vpc_id      = "${aws_vpc.mainvpc.id}"
 
   ingress {
@@ -157,7 +157,7 @@ resource "aws_security_group" "SG_RDP_IN_from_Bastionhost" {
 
   tags = "${merge(local.common_tags,
             map(
-              "Name", "SG_RDP_IN_from_Bastionhost - ${lookup(local.common_tags,"tf_project")}"
+              "Name", "SG_RDP_IN_from_Bastionhost_${lookup(local.common_tags,"tf_project")}"
               )
               )}"
 }
