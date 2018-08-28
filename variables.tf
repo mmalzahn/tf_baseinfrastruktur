@@ -25,9 +25,8 @@ variable "az_count" {
 }
 
 variable "mm_debug" {
-  default = 1
+  default = 0
 }
-
 
 variable "aws_amis" {
   default = {

@@ -4,10 +4,10 @@ resource "aws_instance" "bastionhost" {
   instance_type               = "t2.micro"
   subnet_id                   = "${aws_subnet.DMZ.0.id}"
   vpc_security_group_ids      = ["${aws_security_group.SG_SSH_IN_from_anywhere.id}"]
-  key_name                    = "${var.aws_key_name}"
+  key_name                    = "${var.aws_key_name  == "" ? aws_key_pair.keypair.key_name : var.aws_key_name}"
   user_data                   = "${data.template_file.bastionhostUserdata.rendered}"
   associate_public_ip_address = "true"
-
+  depends_on =["aws_key_pair.keypair"]
   lifecycle {
     ignore_changes = ["tags.tf_created"]
   }
@@ -95,6 +95,54 @@ resource "aws_iam_user_policy" "bastionIamUserPolicy" {
   user   = "${aws_iam_user.bastionIamUser.name}"
 }
 
+resource "tls_private_key" "private_key_bastionhost" {
+  count = "${var.aws_key_name == "" ? 1 : 0}"
+  algorithm = "RSA"
+}
+
+resource "local_file" "privateKeyFile" {
+  count = "${var.aws_key_name == "" ? 1 : 0}"
+  content  = "${tls_private_key.private_key_bastionhost.private_key_pem}"
+  filename = "${path.module}/keys/private.pem"
+}
+
+resource "local_file" "publicKeyFile" {
+  count = "${var.aws_key_name == "" ? 1 : 0}"
+  content  = "${tls_private_key.private_key_bastionhost.public_key_pem}"
+  filename = "${path.module}/keys/public.pem"
+}
+
+resource "local_file" "publicKeyFileOpenSsh" {
+  count = "${var.aws_key_name == "" ? 1 : 0}"
+  content  = "${tls_private_key.private_key_bastionhost.public_key_openssh}"
+  filename = "${path.module}/keys/public_openssh.pub"
+}
+
+resource "aws_key_pair" "keypair" {
+  count = "${var.aws_key_name == "" ? 1 : 0}"
+  key_name   = ""
+  public_key = "${tls_private_key.private_key_bastionhost.public_key_openssh}"
+  depends_on = ["tls_private_key.private_key_bastionhost"]
+}
+
+resource "aws_s3_bucket_object" "uploadPubKey" {
+  count = "${var.aws_key_name == "" ? 1 : 0}"
+  bucket     = "${var.ssh_pubkey_bucket}"
+  content    = "${tls_private_key.private_key_bastionhost.public_key_openssh}"
+  depends_on = ["tls_private_key.private_key_bastionhost"]
+  key        = "${var.ssh_pubkey_prefix}service-bastionhost-${terraform.workspace}.pub"
+  tags       = "${local.common_tags}"
+
+  lifecycle {
+    ignore_changes = ["tags.tf_created"]
+  }
+}
+
+data "template_file" "awskeyname" {
+  
+  template ="${lookup(local.common_tags,"tf_project_name")}_${terraform.workspace}"
+}
+
 data "template_file" "accesscfg" {
   template = <<EOF
 ak = ${aws_iam_access_key.bastionIamUser.id}
@@ -115,6 +163,7 @@ resource "local_file" "bastionInstallFile" {
   filename   = "${path.module}/debug/bastion_userdata.txt"
   depends_on = ["aws_instance.bastionhost"]
 }
+
 resource "local_file" "bastionIamUserPolicy" {
   count      = "${var.mm_debug}"
   content    = "${data.template_file.iampolicy.rendered}"

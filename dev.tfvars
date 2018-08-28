@@ -7,7 +7,7 @@ tag_responsibel = "Matthias Malzahn"
 az_count = "3"
 
 aws_key_name = "CSA-DemoVPCKey1"
-
+#aws_key_name = ""
 laufzeit_tage = "60"
 
 project_name = "DCA-BaseInfra"
