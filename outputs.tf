@@ -63,6 +63,14 @@ output "efs_mount_targets_dns" {
   value = "${aws_efs_mount_target.EFS_Backend.*.dns_name}"
 }
 
+output "secgroups" {
+  value = "${map("ssh_all_in", aws_security_group.SG_SSH_IN_from_anywhere.id,
+                 "http_all_in", aws_security_group.SG_HTTPS_IN_from_VPC.id,
+                 "dockersock_bastion_in", aws_security_group.SG_DockerSocket_IN_from_Bastionhost.id,
+                 "ssh_bastion_in", aws_security_group.SG_SSH_IN_from_Bastionhost.id)
+            }"
+}
+
 output "state_key" {
   value = "${local.workspace_key}"
 }

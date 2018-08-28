@@ -8,6 +8,7 @@ locals {
     tf_environment  = "${terraform.workspace}"
     tf_created      = "${timestamp()}"
     tf_runtime      = "${var.laufzeit_tage}"
+    tf_responsible  = "${var.tag_responsibel}"
   }
 
   workspace_key = "env:/${terraform.workspace}/${var.backend_key}"
