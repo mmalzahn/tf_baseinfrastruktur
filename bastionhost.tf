@@ -25,13 +25,18 @@ resource "aws_instance" "bastionhost" {
               )}"
 }
 
+resource "aws_placement_group" "pgroup1" {
+  name = "pgroup1"
+  strategy ="spread"
+}
+
 data "template_file" "bastionhostUserdata" {
   template = "${file("tpl/bastioninstall.tpl")}"
 
   vars {
-    region = "${var.aws_region}"
-    bucket = "${var.ssh_pubkey_bucket}"
-    prefix = "${var.ssh_pubkey_prefix}"
+    region = "${aws_s3_bucket.pubkeyStorageBucket.region}"
+    bucket = "${aws_s3_bucket.pubkeyStorageBucket.id}"
+    prefix = "keys/"
   }
 }
 
@@ -80,7 +85,7 @@ data "template_file" "iampolicy" {
   template = "${file("tpl/iampol.tpl")}"
 
   vars {
-    bucket = "${var.ssh_pubkey_bucket}"
+    bucket = "${aws_s3_bucket.pubkeyStorageBucket.id}"
   }
 }
 
