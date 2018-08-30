@@ -1,6 +1,9 @@
 resource "aws_s3_bucket" "pubkeyStorageBucket" {
   bucket="${lower(data.template_file.s3keystorBucketname.rendered)}"
   acl = "private"
+  lifecycle {
+    ignore_changes        = ["tags.tf_created"]
+  }
   tags = "${local.common_tags}"
 }
 
