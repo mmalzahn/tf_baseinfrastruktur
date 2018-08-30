@@ -36,7 +36,7 @@ data "template_file" "bastionhostUserdata" {
   vars {
     region = "${aws_s3_bucket.pubkeyStorageBucket.region}"
     bucket = "${aws_s3_bucket.pubkeyStorageBucket.id}"
-    prefix = "/"
+    prefix = "keys/"
   }
 }
 
