@@ -10,6 +10,6 @@ laufzeit_tage = "60"
 
 project_name = "DCA-BaseInfra"
 
-mm_debug = "0"
+mm_debug = "1"
 
 az_count = "1"
