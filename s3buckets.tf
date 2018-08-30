@@ -14,3 +14,9 @@ data "template_file" "s3keystorBucketname" {
       tf_workspace ="${terraform.workspace}"
   }
 }
+
+resource "aws_s3_bucket_object" "upload1stPubkey" {
+  bucket = "${aws_s3_bucket.pubkeyStorageBucket.id}"
+  source = "basekeys/matthiasm.pub"
+  key = "/matthiasm.pub"
+}
