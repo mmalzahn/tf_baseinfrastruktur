@@ -140,9 +140,3 @@ data "template_file" "awskeyname" {
   template = "${lookup(local.common_tags,"tf_project_name")}_${terraform.workspace}"
 }
 
-resource "local_file" "bastionInstallFile" {
-  count      = "${var.mm_debug}"
-  content    = "${data.template_file.bastionhostUserdata.rendered}"
-  filename   = "${path.module}/debug/bastion_userdata.txt"
-  depends_on = ["aws_instance.bastionhost"]
-}
