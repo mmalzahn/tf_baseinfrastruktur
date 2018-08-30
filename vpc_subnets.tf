@@ -101,7 +101,7 @@ resource "aws_nat_gateway" "aws_dmz1_nat_gw" {
   subnet_id     = "${element(aws_subnet.DMZ.*.id,count.index)}"
 
   lifecycle {
-    ignore_changes = ["tags.tf_created"]
+    ignore_changes = ["tags"]
   }
 
   tags = "${merge(local.common_tags,
