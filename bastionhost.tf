@@ -25,6 +25,11 @@ resource "aws_instance" "bastionhost" {
               )}"
 }
 
+resource "aws_placement_group" "pgroup1" {
+  name = "pgroup1"
+  strategy ="spread"
+}
+
 data "template_file" "bastionhostUserdata" {
   template = "${file("tpl/bastioninstall.tpl")}"
 
