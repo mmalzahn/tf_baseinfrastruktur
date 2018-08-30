@@ -3,10 +3,9 @@ yum update -y
 mkdir /usr/bin/bastion
 mkdir /var/log/bastion
 
-aws configure set aws_access_key_id ${aws_access_key_id}
-aws configure set aws_secret_access_key ${aws_secret_access_key}
 
 cat > /usr/bin/bastion/sync_users << 'EOF'
+#!/bin/bash
 
 # The file will log user changes
 LOG_FILE="/var/log/bastion/users_changelog.txt"

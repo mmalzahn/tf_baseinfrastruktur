@@ -1,15 +1,21 @@
 resource "aws_instance" "bastionhost" {
-  count                       = 1
-  ami                         = "${lookup(var.aws_amis, var.aws_region)}"
-  instance_type               = "t2.micro"
-  subnet_id                   = "${aws_subnet.DMZ.0.id}"
-  vpc_security_group_ids      = ["${aws_security_group.SG_SSH_IN_from_anywhere.id}"]
-  key_name                    = "${var.aws_key_name  == "" ? aws_key_pair.keypair.key_name : var.aws_key_name}"
+  count                  = "${var.az_count}"
+  ami                    = "${lookup(var.aws_amis, var.aws_region)}"
+  instance_type          = "t2.micro"
+  subnet_id              = "${element(aws_subnet.DMZ.*.id,count.index)}"
+  vpc_security_group_ids = ["${aws_security_group.SG_SSH_IN_from_anywhere.id}"]
+  key_name               = "${var.aws_key_name}"
+  placement_group        = "${aws_placement_group.pgroup1.name}"
+  iam_instance_profile   = "${aws_iam_instance_profile.bastionIamProf.name}"
+
+  #key_name                    = "${aws_key_pair.keypair.key_name}"
   user_data                   = "${data.template_file.bastionhostUserdata.rendered}"
+  depends_on                  = ["aws_iam_role.bastionS3pubkeyBucket"]
   associate_public_ip_address = "true"
-  depends_on =["aws_key_pair.keypair"]
+
   lifecycle {
-    ignore_changes = ["tags.tf_created"]
+    ignore_changes        = ["tags.tf_created"]
+    create_before_destroy = "true"
   }
 
   tags = "${merge(local.common_tags,
@@ -23,11 +29,9 @@ data "template_file" "bastionhostUserdata" {
   template = "${file("tpl/bastioninstall.tpl")}"
 
   vars {
-    region                = "${var.aws_region}"
-    bucket                = "${var.ssh_pubkey_bucket}"
-    aws_access_key_id     = "${aws_iam_access_key.bastionIamUser.id}"
-    aws_secret_access_key = "${aws_iam_access_key.bastionIamUser.secret}"
-    prefix                = "${var.ssh_pubkey_prefix}"
+    region = "${var.aws_region}"
+    bucket = "${var.ssh_pubkey_bucket}"
+    prefix = "${var.ssh_pubkey_prefix}"
   }
 }
 
@@ -68,17 +72,8 @@ resource "aws_route53_record" "bastionhost" {
   name            = "bastionhost"
   ttl             = "60"
   type            = "A"
-  records         = ["${aws_instance.bastionhost.public_ip}"]
+  records         = ["${aws_instance.bastionhost.*.public_ip}"]
   zone_id         = "${data.aws_route53_zone.dca_poc_domain.zone_id}"
-}
-
-resource "aws_iam_user" "bastionIamUser" {
-  name = "tf-bastion-${replace(var.project_name," ","_")}__${terraform.workspace}"
-  path = "/tf/"
-}
-
-resource "aws_iam_access_key" "bastionIamUser" {
-  user = "${aws_iam_user.bastionIamUser.name}"
 }
 
 data "template_file" "iampolicy" {
@@ -89,44 +84,47 @@ data "template_file" "iampolicy" {
   }
 }
 
-resource "aws_iam_user_policy" "bastionIamUserPolicy" {
+resource "aws_iam_instance_profile" "bastionIamProf" {
+  name = "bastionIamProf_${lookup(local.common_tags,"tf_project_name")}_${terraform.workspace}"
+  role = "${aws_iam_role.bastionS3pubkeyBucket.name}"
+}
+
+resource "aws_iam_role" "bastionS3pubkeyBucket" {
+  name               = "BastionIamS3Role-${lookup(local.common_tags,"tf_project_name")}"
+  assume_role_policy = "${data.aws_iam_policy_document.instance-assume-role-policy.json}"
+}
+
+resource "aws_iam_role_policy" "bastionIamS3BucketPol" {
+  name   = "s3BucketPol"
   policy = "${data.template_file.iampolicy.rendered}"
-  name   = "bastionIamUserPolicy"
-  user   = "${aws_iam_user.bastionIamUser.name}"
+  role   = "${aws_iam_role.bastionS3pubkeyBucket.id}"
 }
 
 resource "tls_private_key" "private_key_bastionhost" {
-  count = "${var.aws_key_name == "" ? 1 : 0}"
+  count     = "${var.aws_key_name == "" ? 1 : 0}"
   algorithm = "RSA"
 }
 
 resource "local_file" "privateKeyFile" {
-  count = "${var.aws_key_name == "" ? 1 : 0}"
+  count    = "${var.aws_key_name == "" ? 1 : 0}"
   content  = "${tls_private_key.private_key_bastionhost.private_key_pem}"
   filename = "${path.module}/keys/private.pem"
 }
 
 resource "local_file" "publicKeyFile" {
-  count = "${var.aws_key_name == "" ? 1 : 0}"
+  count    = "${var.aws_key_name == "" ? 1 : 0}"
   content  = "${tls_private_key.private_key_bastionhost.public_key_pem}"
   filename = "${path.module}/keys/public.pem"
 }
 
 resource "local_file" "publicKeyFileOpenSsh" {
-  count = "${var.aws_key_name == "" ? 1 : 0}"
+  count    = "${var.aws_key_name == "" ? 1 : 0}"
   content  = "${tls_private_key.private_key_bastionhost.public_key_openssh}"
   filename = "${path.module}/keys/public_openssh.pub"
 }
 
-resource "aws_key_pair" "keypair" {
-  count = "${var.aws_key_name == "" ? 1 : 0}"
-  key_name   = ""
-  public_key = "${tls_private_key.private_key_bastionhost.public_key_openssh}"
-  depends_on = ["tls_private_key.private_key_bastionhost"]
-}
-
 resource "aws_s3_bucket_object" "uploadPubKey" {
-  count = "${var.aws_key_name == "" ? 1 : 0}"
+  count      = "${var.aws_key_name == "" ? 1 : 0}"
   bucket     = "${var.ssh_pubkey_bucket}"
   content    = "${tls_private_key.private_key_bastionhost.public_key_openssh}"
   depends_on = ["tls_private_key.private_key_bastionhost"]
@@ -139,22 +137,7 @@ resource "aws_s3_bucket_object" "uploadPubKey" {
 }
 
 data "template_file" "awskeyname" {
-  
-  template ="${lookup(local.common_tags,"tf_project_name")}_${terraform.workspace}"
-}
-
-data "template_file" "accesscfg" {
-  template = <<EOF
-ak = ${aws_iam_access_key.bastionIamUser.id}
-sk = ${aws_iam_access_key.bastionIamUser.secret}
-EOF
-}
-
-resource "local_file" "iamaccesscfg" {
-  count      = "${var.mm_debug}"
-  content    = "${data.template_file.accesscfg.rendered}"
-  filename   = "${path.module}/debug/iamcreds"
-  depends_on = ["aws_iam_access_key.bastionIamUser"]
+  template = "${lookup(local.common_tags,"tf_project_name")}_${terraform.workspace}"
 }
 
 resource "local_file" "bastionInstallFile" {
@@ -162,11 +145,4 @@ resource "local_file" "bastionInstallFile" {
   content    = "${data.template_file.bastionhostUserdata.rendered}"
   filename   = "${path.module}/debug/bastion_userdata.txt"
   depends_on = ["aws_instance.bastionhost"]
-}
-
-resource "local_file" "bastionIamUserPolicy" {
-  count      = "${var.mm_debug}"
-  content    = "${data.template_file.iampolicy.rendered}"
-  filename   = "${path.module}/debug/iampolicy.txt"
-  depends_on = ["aws_iam_user_policy.bastionIamUserPolicy"]
 }
