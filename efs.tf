@@ -1,4 +1,5 @@
 resource "aws_efs_file_system" "efs_StorageBackend" {
+  count = "${var.efs_storage == "true"? 1 : 0}"
   lifecycle {
     ignore_changes = ["tags.tf_created"]
   }
@@ -11,13 +12,14 @@ resource "aws_efs_file_system" "efs_StorageBackend" {
 }
 
 resource "aws_efs_mount_target" "EFS_Backend" {
-  count           = "${var.az_count}"
+  count           = "${var.efs_storage == "true"? var.az_count : 0}"
   file_system_id  = "${aws_efs_file_system.efs_StorageBackend.id}"
   subnet_id       = "${element(aws_subnet.ServicesBackend.*.id,count.index)}"
   security_groups = ["${aws_security_group.SG_EFS_IN_FROM_VPC.id}"]
 }
 
 resource "aws_security_group" "SG_EFS_IN_FROM_VPC" {
+  count = "${var.efs_storage == "true"? 1 : 0}"
   name        = "SG_EFS_IN_VPC"
   description = "Allow EFS traffic from VPC"
   vpc_id      = "${aws_vpc.mainvpc.id}"

@@ -24,6 +24,10 @@ variable "az_count" {
   default = "1"
 }
 
+variable "efs_storage" {
+  default = "true"
+}
+
 variable "mm_debug" {
   default = 0
 }

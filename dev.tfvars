@@ -13,3 +13,5 @@ project_name = "DCA-BaseInfra"
 mm_debug = "1"
 
 az_count = "1"
+
+efs_storage = "false"

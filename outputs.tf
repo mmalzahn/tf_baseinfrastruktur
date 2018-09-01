@@ -48,7 +48,7 @@ output "subnet_cidrblocks_dmz" {
 }
 
 output "efs_filesystem_id" {
-  value = "${aws_efs_file_system.efs_StorageBackend.id}"
+  value = "${aws_efs_file_system.efs_StorageBackend.*.id}"
 }
 
 output "efs_mount_targets_id" {
