@@ -6,7 +6,7 @@ resource "aws_efs_file_system" "efs_StorageBackend" {
 
   tags = "${merge(local.common_tags,
             map(
-              "Name", "EFS Storagebackend - ${lookup(local.common_tags,"tf_project")}"
+              "Name", "${local.resource_prefix}EFS_Storagebackend-${lookup(local.common_tags,"tf_project")}"
               )
               )}"
 }
@@ -44,7 +44,7 @@ resource "aws_security_group" "SG_EFS_IN_FROM_VPC" {
 
   tags = "${merge(local.common_tags,
             map(
-              "Name", "SG_EFS_IN_VPC - ${lookup(local.common_tags,"tf_project")}"
+              "Name", "${local.resource_prefix}SG_EFS_IN_VPC-${lookup(local.common_tags,"tf_project")}"
               )
               )}"
 }
