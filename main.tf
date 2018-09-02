@@ -4,6 +4,13 @@ provider "aws" {
 #  profile                 = "tfinfrauser"
 }
 
+provider "aws" {
+  alias                   = "usa"
+  region                  = "us-east-1"
+#  shared_credentials_file = "C:/Users/matthias/.aws/credentials"
+#  profile                 = "tfinfrauser"
+}
+
 terraform {
   backend "s3" {
     bucket         = "mm-terraform-remote-state-storage"

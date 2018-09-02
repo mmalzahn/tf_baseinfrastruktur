@@ -7,7 +7,7 @@ output "vpc_cidr" {
 }
 
 output "bastion_dns" {
-  value = "${aws_route53_record.bastionhost.fqdn}"
+  value = "${aws_route53_record.bastionhostdns.*.fqdn}"
 }
 
 output "bastion_ip" {
@@ -74,4 +74,8 @@ output "s3PubKeyBucket_name" {
 
 output "state_key" {
   value = "${local.workspace_key}"
+}
+
+output "configId" {
+  value = "${random_id.configId.b64_url}"
 }
