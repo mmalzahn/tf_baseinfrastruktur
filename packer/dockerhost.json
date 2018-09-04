@@ -1,0 +1,68 @@
+{
+    "variables": {
+        "responsible": "",
+        "packerId": "",
+        "project": "",
+        "projectprefix": ""
+    },
+    "builders": [
+        {
+            "type": "amazon-ebs",
+            "access_key": "{{user `aws_access_key`}}",
+            "secret_key": "{{user `aws_secret_key`}}",
+            "region": "eu-west-1",
+            "source_ami": "ami-e4515e0e",
+            "instance_type": "t2.micro",
+            "ssh_username": "ec2-user",
+            "ami_name": "tf-packer-Dockerhost {{timestamp}}",
+            "force_deregister": true,
+            "tags": {
+                "Name": "{{user `projectprefix`}}autoBuildBastionHost",
+                "responsible": "{{user `responsible`}}",
+                "tf_packer": "1",
+                "tf_responsible": "{{user `responsible`}}",
+                "tf_project": "{{user `project`}}",
+                "tf_packerid": "{{user `packerId`}}"
+            },
+            "run_tags": {
+                "Name": "{{user `projectprefix`}}autoBuildBastionHost",
+                "responsible": "{{user `responsible`}}",
+                "tf_packer": "1",
+                "tf_responsible": "{{user `responsible`}}",
+                "tf_project": "{{user `project`}}",
+                "tf_packerid": "{{user `packerId`}}"
+            },
+            "run_volume_tags": {
+                "Name": "{{user `projectprefix`}}autoBuildBastionHost",
+                "responsible": "{{user `responsible`}}",
+                "tf_packer": "1",
+                "tf_responsible": "{{user `responsible`}}",
+                "tf_project": "{{user `project`}}",
+                "tf_packerid": "{{user `packerId`}}"
+            },
+            "snapshot_tags": {
+                "Name": "{{user `projectprefix`}}autoBuildBastionHost",
+                "responsible": "{{user `responsible`}}",
+                "tf_packer": "1",
+                "tf_responsible": "{{user `responsible`}}",
+                "tf_project": "{{user `project`}}",
+                "tf_packerid": "{{user `packerId`}}"
+            }
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "inline": [
+                "sudo yum update -y",
+                "sudo yum install -y amazon-efs-utils docker git",
+                "sudo service docker start",
+                "sudo curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose",
+                "sudo chmod +x /usr/local/bin/docker-compose",
+                "sudo usermod -a -G docker ec2-user",
+                "sudo mkdir /efs",
+                "sudo chmod 777 /efs"
+            ]
+        }
+    ]
+}

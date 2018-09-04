@@ -1,21 +1,34 @@
+# resource "null_resource" "buildBastionAmi" {
+# triggers {
+#     bastion_hosts = "${join(",", aws_subnet.DMZ.*.id)}"
+#   }
+#   provisioner "local-exec" {
+#     command = "packer build -var 'responsible=${var.tag_responsibel}' -var 'project=${var.project_name}' -var 'projectprefix=${local.resource_prefix}' -var 'jsonfile=bastionhost.json' -var 'workdir =${path.cwd}/packer/' -var 'packerId=bastionhost' ./packer/bastionhost.json"
+#     interpreter = ["PowerShell", "-Command"]
+#   }
+# }
+
 resource "aws_instance" "bastionhost" {
   count                  = "${var.optimal_design ? var.az_count : 1}"
-  ami                    = "${lookup(var.aws_amis, var.aws_region)}"
+  ami                    = "${data.aws_ami.bastionhostPackerAmi.id}"
   instance_type          = "t2.micro"
   subnet_id              = "${element(aws_subnet.DMZ.*.id,count.index)}"
   vpc_security_group_ids = ["${aws_security_group.SG_SSH_IN_from_anywhere.id}"]
   key_name               = "${var.aws_key_name}"
-#  placement_group        = "${aws_placement_group.pgroup1.name}"
   iam_instance_profile   = "${aws_iam_instance_profile.bastionIamProf.name}"
+  user_data              = "${data.template_file.bastionhostUserdata.rendered}"
 
-  #key_name                    = "${aws_key_pair.keypair.key_name}"
-  user_data                   = "${data.template_file.bastionhostUserdata.rendered}"
-  depends_on                  = ["aws_iam_role.bastionS3pubkeyBucket","aws_subnet.DMZ"]
+  depends_on = [
+    "aws_iam_role.bastionS3pubkeyBucket",
+    "aws_subnet.DMZ",
+  ]
+
   associate_public_ip_address = "true"
 
   lifecycle {
-    ignore_changes        = ["tags.tf_created"]
-#    create_before_destroy = "true"
+    ignore_changes = ["tags.tf_created"]
+
+    #    create_before_destroy = "true"
   }
 
   tags = "${merge(local.common_tags,
@@ -77,7 +90,7 @@ resource "aws_route53_record" "bastionhostdns" {
   name            = "bastion-${count.index + 1}.${terraform.workspace}"
   type            = "A"
   ttl             = 60
-  records =["${element(aws_instance.bastionhost.*.public_ip, count.index)}"]
+  records         = ["${element(aws_instance.bastionhost.*.public_ip, count.index)}"]
   zone_id         = "${data.aws_route53_zone.dca_poc_domain.zone_id}"
 }
 
@@ -89,7 +102,7 @@ resource "aws_route53_record" "bastionhostdnsdirekt" {
   type            = "A"
   ttl             = 60
   zone_id         = "${data.aws_route53_zone.dca_poc_domain.zone_id}"
-  records =["${element(aws_instance.bastionhost.*.public_ip, count.index)}"]
+  records         = ["${element(aws_instance.bastionhost.*.public_ip, count.index)}"]
 }
 
 resource "aws_route53_record" "bastionhostalias" {

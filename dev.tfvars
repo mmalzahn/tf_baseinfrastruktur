@@ -1,11 +1,26 @@
 aws_region = "eu-west-1"
-
+aws_accountId = "681337066511"
+#
+# CIDR-Rage des zu erstellenden VPC
+#
 vpc_cdir = "10.22.0.0/16"
 
+
+#
+# Startbereich der DMZ Subnetze
+#
 subnetoffset_dmz = 40
 
+
+#
+# Startbereich der Internen Subnetze
+#
 subnetoffset_intra = 10
 
+
+#
+# Startbereich der AMZ Service Subnetze
+#
 subnetoffset_service = 30
 
 #hard_change = "true"
@@ -21,10 +36,12 @@ project_name = "DCA-BaseInfra"
 
 mm_debug = 1
 
-az_count = 2
+az_count = 3
 
-efs_storage = false
+efs_storage = true
 
-api_deploy = false
+api_deploy = true
 
 optimal_design = true
+
+servicenet_deploy = true

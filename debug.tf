@@ -10,3 +10,18 @@ resource "local_file" "iamPolicy" {
   filename   = "${path.module}/debug/iampolicy.txt"
   depends_on = ["aws_instance.bastionhost"]
 }
+resource "local_file" "randomConfigId" {
+  count      = "${var.mm_debug}"
+  content    = "${random_id.configId.b64_url}"
+  filename   = "${path.module}/debug/configId.txt"
+}
+resource "local_file" "randomPart" {
+  count      = "${var.mm_debug}"
+  content    = "${random_id.randomPart.b64_url}"
+  filename   = "${path.module}/debug/randomPart.txt"
+}
+resource "local_file" "bastionAmiId" {
+  count      = "${var.mm_debug}"
+  content    = "${data.aws_ami.bastionhostPackerAmi.id}"
+  filename   = "${path.module}/debug/bastionAmiId.txt"
+}

@@ -103,7 +103,7 @@ resource "aws_lambda_function" "lambda_get_item" {
   filename         = "${data.archive_file.zip_config_get.output_path}"
   source_code_hash = "${data.archive_file.zip_config_get.output_sha}"
   role             = "${aws_iam_role.iam_for_lambda_get.arn}"
-  handler          = "confgiGet.lambda_handler"
+  handler          = "configGet.lambda_handler"
   runtime          = "python3.6"
   tags             = "${local.common_tags}"
 
@@ -111,13 +111,13 @@ resource "aws_lambda_function" "lambda_get_item" {
     ignore_changes = [
       "tags.tf_created",
       "last_modified",
-      "source_code_hash",
+#      "source_code_hash",
     ]
   }
 
   environment {
     variables = {
-      greeting = "Hello"
+      DYNAMODB_TABLE = "${aws_dynamodb_table.tf_config_table.id}"
     }
   }
 }
@@ -128,7 +128,7 @@ resource "aws_lambda_function" "lambda_set_item" {
   filename         = "${data.archive_file.zip_config_post.output_path}"
   source_code_hash = "${data.archive_file.zip_config_post.output_sha}"
   role             = "${aws_iam_role.iam_for_lambda_post.arn}"
-  handler          = "confgiPost.lambda_handler"
+  handler          = "configPost.lambda_handler"
   runtime          = "python3.6"
   tags             = "${local.common_tags}"
 
@@ -136,13 +136,13 @@ resource "aws_lambda_function" "lambda_set_item" {
     ignore_changes = [
       "tags.tf_created",
       "last_modified",
-      "source_code_hash",
+#      "source_code_hash",
     ]
   }
 
   environment {
     variables = {
-      greeting = "Hello"
+      DYNAMODB_TABLE = "${aws_dynamodb_table.tf_config_table.id}"
     }
   }
 }

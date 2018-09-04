@@ -1,3 +1,7 @@
+output "ConfigId" {
+  value = "${random_id.configId.b64_url}"
+}
+
 output "vpc_id" {
   value = "${aws_vpc.mainvpc.id}"
 }
@@ -8,6 +12,21 @@ output "vpc_cidr" {
 
 output "bastion_dns" {
   value = "${aws_route53_record.bastionhostdns.*.fqdn}"
+}
+
+output "api_url_customdomain" {
+  value = "${terraform.workspace == "prod" ? join(";", aws_api_gateway_domain_name.tfapidomain_base.*.domain_name) : join(";",aws_api_gateway_domain_name.tfapidomain_workspace.*.domain_name)}"
+}
+
+output "api_url_cloudfront_url" {
+  value = "${terraform.workspace == "prod" ? join(";",aws_api_gateway_domain_name.tfapidomain_base.*.cloudfront_domain_name) : join(";",aws_api_gateway_domain_name.tfapidomain_workspace.*.cloudfront_domain_name)}"
+}
+output "api_url_cloudfront_id" {
+  value = "${terraform.workspace == "prod" ? join(";",aws_api_gateway_domain_name.tfapidomain_base.*.cloudfront_zone_id) : join(";",aws_api_gateway_domain_name.tfapidomain_workspace.*.cloudfront_zone_id)}"
+}
+
+output "api_invokeUrl" {
+  value = "${aws_api_gateway_deployment.testdeployment.*.invoke_url}"
 }
 
 output "bastion_ip" {
@@ -76,6 +95,4 @@ output "state_key" {
   value = "${local.workspace_key}"
 }
 
-output "configId" {
-  value = "${random_id.configId.b64_url}"
-}
+

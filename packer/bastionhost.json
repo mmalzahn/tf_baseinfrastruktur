@@ -1,0 +1,59 @@
+{
+    "variables": {
+        "responsible": "",
+        "packerId": "",
+        "project": "",
+        "projectprefix":""
+    },
+    "builders": [
+        {
+            "type": "amazon-ebs",
+            "region": "eu-west-1",
+            "source_ami": "ami-e4515e0e",
+            "instance_type": "t2.micro",
+            "ssh_username": "ec2-user",
+            "ami_name": "tf-packer-exa {{timestamp}}",
+            "force_deregister": true,
+            "tags": {
+                "Name": "{{user `projectprefix`}}autoBuildBastionHost",
+                "responsible": "{{user `responsible`}}",
+                "tf_packer": "1",
+                "tf_responsible": "{{user `responsible`}}",
+                "tf_project": "{{user `project`}}",
+                "tf_packerid": "{{user `packerId`}}"
+            },
+            "run_tags": {
+                "Name": "{{user `projectprefix`}}autoBuildBastionHost",
+                "responsible": "{{user `responsible`}}",
+                "tf_packer": "1",
+                "tf_responsible": "{{user `responsible`}}",
+                "tf_project": "{{user `project`}}",
+                "tf_packerid": "{{user `packerId`}}"
+            },
+            "run_volume_tags": {
+                "Name": "{{user `projectprefix`}}autoBuildBastionHost",
+                "responsible": "{{user `responsible`}}",
+                "tf_packer": "1",
+                "tf_responsible": "{{user `responsible`}}",
+                "tf_project": "{{user `project`}}",
+                "tf_packerid": "{{user `packerId`}}"
+            },
+            "snapshot_tags": {
+                "Name": "{{user `projectprefix`}}autoBuildBastionHost",
+                "responsible": "{{user `responsible`}}",
+                "tf_packer": "1",
+                "tf_responsible": "{{user `responsible`}}",
+                "tf_project": "{{user `project`}}",
+                "tf_packerid": "{{user `packerId`}}"
+            }
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "inline": [
+                "sudo yum update -y"
+            ]
+        }
+    ]
+}

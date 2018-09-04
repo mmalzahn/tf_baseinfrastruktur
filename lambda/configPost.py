@@ -22,28 +22,24 @@ def response_msg(message, status_code):
         }
 
 def lambda_handler(event, context):
-    # try:
-    #     bodyjson = json.loads(event['body'])
-    # except KeyError as e:
-    #     returndata = "uuups....."
-    #     return response_msg(returndata, 200)
+    try:
+        bodyjson = json.loads(event['body'])
+    except KeyError as e:
+        returndata = "uuups....."
+        return response_msg(returndata, 200)
     
-    # token = bodyjson.get('tokenid', None)
-    # if token == None:
-    #     returndata = "haha... kein Code"
-    # else:
-    #     try:
-    #         response_db = table.get_item(
-    #             Key={
-    #                 'configId': token
-    #             }
-    #         )
-    #     except ClientError as e:
-    #         return resonse_msg(e.response['Error']['Message'],200)
-        
-    #     returndata = response_db.get('Item',None)
-    #     if returndata==None:
-    #         return response_msg('{"error": "Pech gehabt"}',205)
+    token = bodyjson.get('tokenid', None)
 
-    # return response_msg(returndata, 200)
-    return response_msg(event,200)
+    if token == None:
+        returndata = "haha... kein Code"
+    else:
+        try:
+            response_db = table.put_item(Item=json.loads(event['body']))
+        except ClientError as e:
+            return response_msg(e.response['Error']['Message'],200)
+       
+        returndata = "daten eingetragen"
+        if returndata==None:
+            return response_msg('{"error": "Pech gehabt"}',205)
+    return response_msg(returndata, 200)
+#    return response_msg(event,200)
