@@ -37,6 +37,7 @@ resource "aws_api_gateway_method" "config_method_get" {
 }
 
 resource "aws_lambda_permission" "apigw_configGet_lambda" {
+  count         = "${var.api_deploy ? 1 : 0}"
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
   function_name = "${aws_lambda_function.lambda_get_item.arn}"
@@ -46,6 +47,7 @@ resource "aws_lambda_permission" "apigw_configGet_lambda" {
 }
 
 resource "aws_lambda_permission" "apigw_configPost_lambda" {
+  count         = "${var.api_deploy ? 1 : 0}"
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
   function_name = "${aws_lambda_function.lambda_set_item.arn}"

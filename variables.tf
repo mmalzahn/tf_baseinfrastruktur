@@ -94,3 +94,7 @@ variable "aws_amis" {
 variable "add_randomString" {
   default = true
 }
+
+variable "testhost_deploy" {
+  default = true
+}

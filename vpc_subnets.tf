@@ -16,7 +16,7 @@ resource "aws_vpc" "mainvpc" {
 
 resource "aws_subnet" "DMZ" {
   count                   = "${var.az_count}"
-  cidr_block              = "${cidrsubnet(var.vpc_cdir, 8, count.index + var.subnetoffset_dmz)}"
+  cidr_block              = "${cidrsubnet(var.vpc_cdir,8 , count.index + var.subnetoffset_dmz)}"
   vpc_id                  = "${aws_vpc.mainvpc.id}"
   map_public_ip_on_launch = "true"
   availability_zone       = "${data.aws_availability_zones.azs.names[count.index]}"

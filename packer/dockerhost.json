@@ -17,7 +17,7 @@
             "ami_name": "tf-packer-Dockerhost {{timestamp}}",
             "force_deregister": true,
             "tags": {
-                "Name": "{{user `projectprefix`}}autoBuildBastionHost",
+                "Name": "{{user `projectprefix`}}autoBuildDockerHost",
                 "responsible": "{{user `responsible`}}",
                 "tf_packer": "1",
                 "tf_responsible": "{{user `responsible`}}",
@@ -25,7 +25,7 @@
                 "tf_packerid": "{{user `packerId`}}"
             },
             "run_tags": {
-                "Name": "{{user `projectprefix`}}autoBuildBastionHost",
+                "Name": "{{user `projectprefix`}}autoBuildDockerHost",
                 "responsible": "{{user `responsible`}}",
                 "tf_packer": "1",
                 "tf_responsible": "{{user `responsible`}}",
@@ -33,7 +33,7 @@
                 "tf_packerid": "{{user `packerId`}}"
             },
             "run_volume_tags": {
-                "Name": "{{user `projectprefix`}}autoBuildBastionHost",
+                "Name": "{{user `projectprefix`}}autoBuildDockerHost",
                 "responsible": "{{user `responsible`}}",
                 "tf_packer": "1",
                 "tf_responsible": "{{user `responsible`}}",
@@ -41,7 +41,7 @@
                 "tf_packerid": "{{user `packerId`}}"
             },
             "snapshot_tags": {
-                "Name": "{{user `projectprefix`}}autoBuildBastionHost",
+                "Name": "{{user `projectprefix`}}autoBuildDockerHost",
                 "responsible": "{{user `responsible`}}",
                 "tf_packer": "1",
                 "tf_responsible": "{{user `responsible`}}",

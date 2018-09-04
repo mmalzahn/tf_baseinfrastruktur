@@ -14,7 +14,7 @@ resource "aws_instance" "bastionhost" {
   instance_type          = "t2.micro"
   subnet_id              = "${element(aws_subnet.DMZ.*.id,count.index)}"
   vpc_security_group_ids = ["${aws_security_group.SG_SSH_IN_from_anywhere.id}"]
-  key_name               = "${var.aws_key_name}"
+  #key_name               = "${var.aws_key_name}"
   iam_instance_profile   = "${aws_iam_instance_profile.bastionIamProf.name}"
   user_data              = "${data.template_file.bastionhostUserdata.rendered}"
 
@@ -27,8 +27,7 @@ resource "aws_instance" "bastionhost" {
 
   lifecycle {
     ignore_changes = ["tags.tf_created"]
-
-    #    create_before_destroy = "true"
+    create_before_destroy = "true"
   }
 
   tags = "${merge(local.common_tags,
