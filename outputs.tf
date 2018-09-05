@@ -36,6 +36,9 @@ output "bastion_private_ip" {
 output "bastion_dns" {
   value = "${aws_route53_record.bastionhostdns.*.fqdn}"
 }
+output "bastion_dns_entry" {
+  value = "${aws_route53_record.bastionhostdnsdirekt.fqdn}"
+}
 
 output "bastion_port" {
   value = "22"
