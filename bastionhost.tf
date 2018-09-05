@@ -1,22 +1,22 @@
 resource "aws_instance" "bastionhost" {
-  count                  = "${var.optimal_design ? var.az_count : 1}"
-  ami                    = "${data.aws_ami.bastionhostPackerAmi.id}"
-  instance_type          = "t2.micro"
-  subnet_id              = "${element(aws_subnet.DMZ.*.id,count.index)}"
-  vpc_security_group_ids = ["${aws_security_group.SG_SSH_IN_from_anywhere.id}"]
-  #key_name               = "${var.aws_key_name}"
-  iam_instance_profile   = "${aws_iam_instance_profile.bastionIamProf.name}"
-  user_data              = "${data.template_file.bastionhostUserdata.rendered}"
+  count                                = "${var.optimal_design ? var.az_count : 1}"
+  ami                                  = "${data.aws_ami.bastionhostPackerAmi.id}"
+  instance_type                        = "t2.micro"
+  subnet_id                            = "${element(aws_subnet.DMZ.*.id,count.index)}"
+  vpc_security_group_ids               = ["${aws_security_group.SG_SSH_IN_from_anywhere.id}"]
+  placement_group                      = "${aws_placement_group.bastionhostpgroup.id}"
+  iam_instance_profile                 = "${aws_iam_instance_profile.bastionIamProf.name}"
+  instance_initiated_shutdown_behavior = "terminate"
+  user_data                            = "${data.template_file.bastionhostUserdata.rendered}"
+  associate_public_ip_address          = "true"
 
   depends_on = [
     "aws_iam_role.bastionS3pubkeyBucket",
     "aws_subnet.DMZ",
   ]
 
-  associate_public_ip_address = "true"
-
   lifecycle {
-    ignore_changes = ["tags.tf_created"]
+    ignore_changes        = ["tags.tf_created"]
     create_before_destroy = "true"
   }
 
@@ -27,8 +27,8 @@ resource "aws_instance" "bastionhost" {
               )}"
 }
 
-resource "aws_placement_group" "pgroup1" {
-  name     = "${local.resource_prefix}pgroup1"
+resource "aws_placement_group" "bastionhostpgroup" {
+  name     = "${local.resource_prefix}bastionhost-pgroup"
   strategy = "spread"
 }
 

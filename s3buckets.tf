@@ -14,7 +14,7 @@ resource "aws_s3_bucket_object" "uploadPubkey" {
   key = "keys/${element(var.pubkeyList, count.index)}"
 
   lifecycle {
-    ignore_changes        = ["tags.tf_created"]
+    ignore_changes        = ["tags"]
   }
   tags = "${local.common_tags}"
 }
