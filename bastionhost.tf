@@ -9,6 +9,7 @@ resource "aws_instance" "bastionhost" {
   instance_initiated_shutdown_behavior = "terminate"
   user_data                            = "${data.template_file.bastionhostUserdata.rendered}"
   associate_public_ip_address          = "true"
+  volume_tags                          = "${local.common_tags}"
 
   depends_on = [
     "aws_iam_role.bastionS3pubkeyBucket",
@@ -16,7 +17,7 @@ resource "aws_instance" "bastionhost" {
   ]
 
   lifecycle {
-    ignore_changes        = ["tags.tf_created"]
+    ignore_changes        = ["tags.tf_created", "volume_tags.tf_created"]
     create_before_destroy = "true"
   }
 
