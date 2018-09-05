@@ -1,13 +1,3 @@
-# resource "null_resource" "buildBastionAmi" {
-# triggers {
-#     bastion_hosts = "${join(",", aws_subnet.DMZ.*.id)}"
-#   }
-#   provisioner "local-exec" {
-#     command = "packer build -var 'responsible=${var.tag_responsibel}' -var 'project=${var.project_name}' -var 'projectprefix=${local.resource_prefix}' -var 'jsonfile=bastionhost.json' -var 'workdir =${path.cwd}/packer/' -var 'packerId=bastionhost' ./packer/bastionhost.json"
-#     interpreter = ["PowerShell", "-Command"]
-#   }
-# }
-
 resource "aws_instance" "bastionhost" {
   count                  = "${var.optimal_design ? var.az_count : 1}"
   ami                    = "${data.aws_ami.bastionhostPackerAmi.id}"
