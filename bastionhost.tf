@@ -130,7 +130,7 @@ resource "aws_iam_instance_profile" "bastionIamProf" {
 }
 
 resource "aws_iam_role" "bastionS3pubkeyBucket" {
-  name               = "${local.resource_prefix}BastionIamS3Role}"
+  name               = "${local.resource_prefix}BastionIamS3Role"
   assume_role_policy = "${data.aws_iam_policy_document.instance-assume-role-policy.json}"
 }
 
