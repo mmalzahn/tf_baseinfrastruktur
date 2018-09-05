@@ -95,6 +95,11 @@ variable "add_randomString" {
   default = true
 }
 
+variable "pubkeyList" {
+  type ="list"
+  default = ["matthiasm.pub"]
+}
+
 variable "testhost_deploy" {
   default = true
 }

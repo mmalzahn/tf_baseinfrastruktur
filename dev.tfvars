@@ -45,3 +45,5 @@ api_deploy = false
 optimal_design = false
 
 servicenet_deploy = true
+
+pubkeyList = ["matthiasm.pub","testuser1.pub","testuser2.pub"]
