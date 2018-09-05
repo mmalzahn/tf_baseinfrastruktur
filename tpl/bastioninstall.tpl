@@ -27,11 +27,11 @@ while read line; do
     # Create a user account if it does not already exist
     cut -d: -f1 /etc/passwd | grep -qx $USER_NAME
     if [ $? -eq 1 ]; then
-      /usr/sbin/adduser $USER_NAME && \
+      /usr/sbin/adduser $USER_NAME --shell /bin/false && \
       mkdir -m 700 /home/$USER_NAME/.ssh && \
       chown $USER_NAME:$USER_NAME /home/$USER_NAME/.ssh && \
       echo "$line" >> ~/keys_installed && \
-      echo "`date --date="today" "+%Y-%m-%d %H-%M-%S"`: Creating user account for $USER_NAME ($line)" >> $LOG_FILE
+      echo "`date --date="today" "+%Y-%m-%d %H-%M-%S"`-[`hostname`]: Creating user account for $USER_NAME ($line)" >> $LOG_FILE
     fi
 
     # Copy the public key from S3, if a user account was created 
@@ -55,7 +55,7 @@ if [ -f ~/keys_installed ]; then
   comm -13 ~/keys_retrieved_from_s3 ~/keys_installed | sed "s/\t//g" > ~/keys_to_remove
   while read line; do
     USER_NAME="`get_user_name "$line"`"
-    echo "`date --date="today" "+%Y-%m-%d %H-%M-%S"`: Removing user account for $USER_NAME ($line)" >> $LOG_FILE
+    echo "`date --date="today" "+%Y-%m-%d %H-%M-%S"`-[`hostname`]: Removing user account for $USER_NAME ($line)" >> $LOG_FILE
     /usr/sbin/userdel -r -f $USER_NAME
   done < ~/keys_to_remove
   comm -3 ~/keys_installed ~/keys_to_remove | sed "s/\t//g" > ~/tmp && mv ~/tmp ~/keys_installed
@@ -63,7 +63,18 @@ fi
 
 EOF
 
+# cat > /usr/bin/bastion/upload_logs << 'EOF'
+# #!/bin/bash
+
+# # The file will log user changes
+# LOG_FILE="/var/log/bastion/users_changelog.txt"
+# KEY_LOGFILE = "bastionlogs/$(hostname)_userlog.txt"
+# aws s3api put-object --bucket ${bucket} --key $KEY_LOGFILE --body $LOG_FILE
+
+# EOF
+
 chmod 700 /usr/bin/bastion/sync_users
+#chmod 700 /usr/bin/bastion/upload_logs
 
 cat > ~/mycron << EOF
 */2 * * * * /usr/bin/bastion/sync_users
