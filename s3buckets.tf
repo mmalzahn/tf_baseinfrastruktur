@@ -1,20 +1,23 @@
 resource "aws_s3_bucket" "pubkeyStorageBucket" {
-  bucket="${lower(local.resource_prefix)}pubkeystore"
-  acl = "private"
+  bucket = "tf-${lower(replace(random_id.randomPart.b64_url,"-",""))}pubkeystore"
+  acl    = "private"
+
   lifecycle {
-    ignore_changes        = ["tags.tf_created"]
+    ignore_changes = ["tags.tf_created"]
   }
+
   tags = "${local.common_tags}"
 }
 
 resource "aws_s3_bucket_object" "uploadPubkey" {
-  count = "${length(var.pubkeyList)}"
+  count  = "${length(var.pubkeyList)}"
   bucket = "${aws_s3_bucket.pubkeyStorageBucket.id}"
   source = "basekeys/${element(var.pubkeyList, count.index)}"
-  key = "keys/${element(var.pubkeyList, count.index)}"
+  key    = "keys/${element(var.pubkeyList, count.index)}"
 
   lifecycle {
-    ignore_changes        = ["tags"]
+    ignore_changes = ["tags"]
   }
+
   tags = "${local.common_tags}"
 }

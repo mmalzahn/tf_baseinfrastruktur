@@ -11,7 +11,7 @@ locals {
     tf_configId     = "${random_id.configId.b64_url}"
   }
 
-  resource_prefix = "${random_id.randomPart.b64_url}-${var.project_name}-${terraform.workspace}-"
+  resource_prefix = "${random_id.randomPart.b64_url}-${replace(var.project_name,"_","")}-${terraform.workspace}-"
   workspace_key   = "env:/${terraform.workspace}/${var.backend_key}"
 }
 
