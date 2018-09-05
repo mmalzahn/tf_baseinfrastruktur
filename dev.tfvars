@@ -32,16 +32,16 @@ aws_key_name = "CSA-DemoVPCKey1"
 #aws_key_name = ""
 laufzeit_tage = 60
 
-project_name = "DCA-BaseInfra"
+project_name = "DcaBaseInf"
 
 mm_debug = 1
 
 az_count = 1
 
-efs_storage = false
+efs_storage = true
 
 api_deploy = false
 
 optimal_design = false
 
-servicenet_deploy = false
+servicenet_deploy = true
