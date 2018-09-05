@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "pubkeyStorageBucket" {
-  bucket="${lower(data.template_file.s3keystorBucketname.rendered)}"
+  bucket="${lower(local.resource_prefix)}pubkeystore"
   acl = "private"
   lifecycle {
     ignore_changes        = ["tags.tf_created"]
@@ -7,16 +7,14 @@ resource "aws_s3_bucket" "pubkeyStorageBucket" {
   tags = "${local.common_tags}"
 }
 
-data "template_file" "s3keystorBucketname" {
-  template = "DCA-$${prj_name}-$${tf_workspace}-pubkeystore"
-  vars {
-      prj_name ="${replace(var.project_name," ","-")}"
-      tf_workspace ="${terraform.workspace}"
-  }
-}
-
-resource "aws_s3_bucket_object" "upload1stPubkey" {
+resource "aws_s3_bucket_object" "uploadPubkey" {
+  count = "${length(var.pubkeyList)}"
   bucket = "${aws_s3_bucket.pubkeyStorageBucket.id}"
-  source = "basekeys/matthiasm.pub"
-  key = "keys/matthiasm.pub"
+  source = "basekeys/${element(var.pubkeyList, count.index)}"
+  key = "keys/${element(var.pubkeyList, count.index)}"
+
+  lifecycle {
+    ignore_changes        = ["tags.tf_created"]
+  }
+  tags = "${local.common_tags}"
 }
