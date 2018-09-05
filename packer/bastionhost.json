@@ -3,17 +3,19 @@
         "responsible": "",
         "packerId": "",
         "project": "",
-        "projectprefix":""
+        "projectprefix":"",
+        "ami_regions":""
     },
     "builders": [
         {
             "type": "amazon-ebs",
             "region": "eu-west-1",
-            "source_ami": "ami-e4515e0e",
+            "source_ami": "ami-047bb4163c506cd98",
             "instance_type": "t2.micro",
             "ssh_username": "ec2-user",
             "ami_name": "tf-packer-exa {{timestamp}}",
             "force_deregister": true,
+            "ami_regions": "{{user `ami_regions`}}",
             "tags": {
                 "Name": "{{user `projectprefix`}}autoBuildBastionHost",
                 "responsible": "{{user `responsible`}}",

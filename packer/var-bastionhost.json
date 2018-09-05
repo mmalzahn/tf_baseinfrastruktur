@@ -2,5 +2,6 @@
     "packerId": "bastionhost",
     "project": "projekt-xy",
     "projectprefix": "pro-001-mm-",
-    "responsible": "Matthias Malzahn"
-}
+    "responsible": "Matthias Malzahn",
+    "ami_regions": "eu-west-1,eu-central-1"
+  }
