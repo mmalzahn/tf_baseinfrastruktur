@@ -3,7 +3,7 @@ aws_accountId = "681337066511"
 #
 # CIDR-Rage des zu erstellenden VPC
 #
-vpc_cdir = "10.220.0.0/16"
+vpc_cdir = "10.23.0.0/16"
 
 
 #
@@ -32,7 +32,7 @@ aws_key_name = "CSA-DemoVPCKey1"
 #aws_key_name = ""
 laufzeit_tage = 60
 
-project_name = "DCA-BaseInfra"
+project_name = "DcaBaseInf"
 
 mm_debug = 1
 
@@ -45,3 +45,4 @@ api_deploy = true
 optimal_design = true
 
 servicenet_deploy = true
+pubkeyList = ["matthiasm.pub","testuser1.pub","testuser2.pub"]

@@ -10,10 +10,6 @@ output "vpc_cidr" {
   value = "${aws_vpc.mainvpc.cidr_block}"
 }
 
-output "bastion_dns" {
-  value = "${aws_route53_record.bastionhostdns.*.fqdn}"
-}
-
 output "api_url_customdomain" {
   value = "${terraform.workspace == "prod" ? join(";", aws_api_gateway_domain_name.tfapidomain_base.*.domain_name) : join(";",aws_api_gateway_domain_name.tfapidomain_workspace.*.domain_name)}"
 }
@@ -29,8 +25,16 @@ output "api_invokeUrl" {
   value = "${aws_api_gateway_deployment.testdeployment.*.invoke_url}"
 }
 
-output "bastion_ip" {
+output "bastion_public_ip" {
   value = "${aws_instance.bastionhost.*.public_ip}"
+}
+
+output "bastion_private_ip" {
+  value = "${aws_instance.bastionhost.*.private_ip}"
+}
+
+output "bastion_dns" {
+  value = "${aws_route53_record.bastionhostdns.*.fqdn}"
 }
 
 output "bastion_port" {
@@ -95,4 +99,18 @@ output "state_key" {
   value = "${local.workspace_key}"
 }
 
+output "testhost_ip" {
+  value = "${aws_instance.internerTesthost.*.private_ip}"
+}
 
+output "testhost_dns" {
+  value = "${aws_route53_record.internerTesthost.*.fqdn}"
+}
+
+output "dns_name" {
+  value = "${data.aws_route53_zone.dca_poc_domain.name}"
+}
+
+output "dns_zone_id" {
+  value = "${data.aws_route53_zone.dca_poc_domain.zone_id}"
+}
