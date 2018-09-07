@@ -6,7 +6,7 @@ resource "aws_instance" "internerTesthost" {
   vpc_security_group_ids      = ["${aws_security_group.SG_SSH_IN_from_Bastionhost.id}"]
   key_name                    = "${var.aws_key_name}"
   iam_instance_profile        = "${aws_iam_instance_profile.bastionIamProf.name}"
-  user_data                   = "${data.template_file.bastionhostUserdata.rendered}"
+  user_data                   = "${data.template_file.testhostUserdata.rendered}"
   associate_public_ip_address = "false"
 
   depends_on = [
@@ -34,8 +34,17 @@ resource "aws_instance" "internerTesthost" {
               )}"
 }
 
+data "template_file" "testhostUserdata" {
+  count    = "${var.debug_on ? 1 : var.testhost_deploy ? 1 :0}"
+  template = "${file("tpl/testhostinstall.tpl")}"
+
+  vars {
+    file_system_id = "${aws_efs_file_system.efs_StorageBackend.id}"
+  }
+}
+
 resource "aws_route53_record" "internerTesthost" {
-  count           = "${var.testhost_deploy ? 1 :0}"
+  count           = "${var.debug_on ? 1 : var.testhost_deploy ? 1 :0}"
   allow_overwrite = "true"
   depends_on      = ["aws_instance.internerTesthost"]
   name            = "internertesthost.${terraform.workspace}"

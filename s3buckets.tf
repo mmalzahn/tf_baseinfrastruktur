@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "pubkeyStorageBucket" {
-  bucket = "tf-${lower(replace(random_id.randomPart.b64_url,"-",""))}-${terraform.workspace}-pubkeystore"
+  bucket = "tf-${local.projectId}-${terraform.workspace}-pubkeystore"
   acl    = "private"
 
   lifecycle {

@@ -8,11 +8,20 @@ locals {
     tf_created      = "${timestamp()}"
     tf_runtime      = "${var.laufzeit_tage}"
     tf_responsible  = "${var.tag_responsibel}"
-    tf_configId     = "${random_id.configId.b64_url}"
+    tf_configId     = "${local.projectId}"
   }
-  adminInfoTopic = "${data.dns_txt_record_set.infotopic.record}"
+
+  projectId       = "${random_string.projectId.result}"
+  adminInfoTopic  = "${data.dns_txt_record_set.infotopic.record}"
   resource_prefix = "tf-${random_id.randomPart.b64_url}-${replace(var.project_name,"_","")}-${terraform.workspace}-"
   workspace_key   = "env:/${terraform.workspace}/${var.backend_key}"
+}
+
+resource "random_string" "projectId" {
+  length  = 10
+  special = false
+  upper   = false
+  number  = false
 }
 
 data "dns_txt_record_set" "infotopic" {
@@ -36,29 +45,30 @@ data "aws_iam_policy_document" "instance-assume-role-policy" {
   }
 }
 
+data "aws_acm_certificate" "cert_dev" {
+  provider = "aws.usa"
+  domain   = "*.dev.${var.dns_domain}"
+}
+
+data "aws_acm_certificate" "cert_base" {
+  provider = "aws.usa"
+  domain   = "*.${var.dns_domain}"
+}
+
+data "aws_ami" "bastionhostPackerAmi" {
+  owners      = ["681337066511"]
+  most_recent = true
+
+  filter {
+    name   = "tag:tf_packerid"
+    values = ["bastionhost"]
+  }
+}
+
 resource "random_id" "configId" {
   byte_length = 16
 }
 
 resource "random_id" "randomPart" {
   byte_length = 4
-}
-
- data "aws_acm_certificate" "cert_dev" {
-   provider = "aws.usa"
-   domain   = "*.dev.${var.dns_domain}"
- }
- data "aws_acm_certificate" "cert_base" {
-   provider = "aws.usa"
-   domain   = "*.${var.dns_domain}"
- }
-
- data "aws_ami" "bastionhostPackerAmi" {
-  filter {
-    name   = "tag:tf_packerid"
-    values = ["bastionhost"]
-  }
-
-  owners      = ["681337066511"]
-  most_recent = true
 }
