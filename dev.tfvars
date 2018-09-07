@@ -34,16 +34,17 @@ laufzeit_tage = 60
 
 project_name = "DcaBaseInf"
 
-mm_debug = 1
-
+debug_on = true
+testhost_deploy = false
 az_count = 1
 
-efs_storage = true
+efs_storage = false
 
 api_deploy = false
 
 optimal_design = false
 
-servicenet_deploy = true
+servicenet_deploy = false
 
 pubkeyList = ["matthiasm.pub","testuser1.pub","testuser2.pub"]
+#pubkeyList = ["matthiasm.pub"]
