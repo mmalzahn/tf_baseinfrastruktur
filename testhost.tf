@@ -1,5 +1,5 @@
 resource "aws_instance" "internerTesthost" {
-  count                       = "${var.testhost_deploy ? 1 :0}"
+  count                       = "${var.debug_on ? 1 : var.testhost_deploy ? 1 :0}"
   ami                         = "${data.aws_ami.bastionhostPackerAmi.id}"
   instance_type               = "t2.micro"
   subnet_id                   = "${element(aws_subnet.Backend.*.id,count.index)}"
@@ -8,10 +8,9 @@ resource "aws_instance" "internerTesthost" {
   iam_instance_profile        = "${aws_iam_instance_profile.bastionIamProf.name}"
   user_data                   = "${data.template_file.bastionhostUserdata.rendered}"
   associate_public_ip_address = "false"
-  volume_tags                 = "${local.common_tags}"
 
   depends_on = [
-    "aws_iam_role.bastionS3pubkeyBucket",
+    "aws_iam_role.bastionhostRole",
     "aws_subnet.Backend",
   ]
 
@@ -25,6 +24,12 @@ resource "aws_instance" "internerTesthost" {
   tags = "${merge(local.common_tags,
             map(
               "Name", "${local.resource_prefix}intern_LinuxTesthost_${count.index + 1}_${lookup(local.common_tags,"tf_project")}"
+              )
+              )}"
+
+  volume_tags = "${merge(local.common_tags,
+            map(
+              "belongs_to", "${local.resource_prefix}intern_LinuxTesthost_${count.index + 1}_${lookup(local.common_tags,"tf_project")}"
               )
               )}"
 }

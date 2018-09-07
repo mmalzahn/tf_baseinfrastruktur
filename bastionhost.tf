@@ -10,9 +10,10 @@ resource "aws_instance" "bastionhost" {
   user_data                            = "${data.template_file.bastionhostUserdata.rendered}"
   associate_public_ip_address          = "true"
   volume_tags                          = "${local.common_tags}"
+  key_name                             = "${var.debug_on ? var.aws_key_name : ""}"
 
   depends_on = [
-    "aws_iam_role.bastionS3pubkeyBucket",
+    "aws_iam_role.bastionhostRole",
     "aws_subnet.DMZ",
   ]
 
@@ -20,6 +21,11 @@ resource "aws_instance" "bastionhost" {
     ignore_changes        = ["tags.tf_created", "volume_tags.tf_created"]
     create_before_destroy = "true"
   }
+  volume_tags = "${merge(local.common_tags,
+            map(
+              "belongs_to", "${local.resource_prefix}DMZ_Linuxbastionhost_${count.index + 1}_${lookup(local.common_tags,"tf_project")}"
+              )
+              )}"
 
   tags = "${merge(local.common_tags,
             map(
@@ -37,9 +43,10 @@ data "template_file" "bastionhostUserdata" {
   template = "${file("tpl/bastioninstall.tpl")}"
 
   vars {
-    region = "${aws_s3_bucket.pubkeyStorageBucket.region}"
-    bucket = "${aws_s3_bucket.pubkeyStorageBucket.id}"
-    prefix = "keys/"
+    region    = "${aws_s3_bucket.pubkeyStorageBucket.region}"
+    bucket    = "${aws_s3_bucket.pubkeyStorageBucket.id}"
+    prefix    = "keys/"
+    topic_arn = "${local.adminInfoTopic}"
   }
 }
 
@@ -107,68 +114,40 @@ resource "aws_route53_record" "bastionhostalias" {
   zone_id = "${data.aws_route53_zone.dca_poc_domain.zone_id}"
 }
 
-data "template_file" "iampolicy" {
-  template = "${file("tpl/iampol.tpl")}"
+data "template_file" "iampolicy_s3" {
+  template = "${file("tpl/iampol_s3.tpl")}"
 
   vars {
     bucket = "${aws_s3_bucket.pubkeyStorageBucket.id}"
   }
 }
+data "template_file" "iampolicy_sns" {
+  template = "${file("tpl/iampol_sns.tpl")}"
+
+  vars {
+    target_topic = "${data.dns_txt_record_set.infotopic.record}"
+  }
+}
 
 resource "aws_iam_instance_profile" "bastionIamProf" {
   name = "bastionIamProf_${lookup(local.common_tags,"tf_project_name")}_${terraform.workspace}"
-  role = "${aws_iam_role.bastionS3pubkeyBucket.name}"
+  role = "${aws_iam_role.bastionhostRole.name}"
 }
 
-resource "aws_iam_role" "bastionS3pubkeyBucket" {
-  name               = "${local.resource_prefix}BastionIamS3Role"
+resource "aws_iam_role" "bastionhostRole" {
+  name               = "${local.resource_prefix}BastionIamRole"
   assume_role_policy = "${data.aws_iam_policy_document.instance-assume-role-policy.json}"
 }
 
 resource "aws_iam_role_policy" "bastionIamS3BucketPol" {
   name   = "s3BucketPol"
-  policy = "${data.template_file.iampolicy.rendered}"
-  role   = "${aws_iam_role.bastionS3pubkeyBucket.id}"
+  policy = "${data.template_file.iampolicy_s3.rendered}"
+  role   = "${aws_iam_role.bastionhostRole.id}"
 }
-
-resource "tls_private_key" "private_key_bastionhost" {
-  count     = "${var.aws_key_name == "" ? 1 : 0}"
-  algorithm = "RSA"
-}
-
-resource "local_file" "privateKeyFile" {
-  count    = "${var.aws_key_name == "" ? 1 : 0}"
-  content  = "${tls_private_key.private_key_bastionhost.private_key_pem}"
-  filename = "${path.module}/keys/private.pem"
-}
-
-resource "local_file" "publicKeyFile" {
-  count    = "${var.aws_key_name == "" ? 1 : 0}"
-  content  = "${tls_private_key.private_key_bastionhost.public_key_pem}"
-  filename = "${path.module}/keys/public.pem"
-}
-
-resource "local_file" "publicKeyFileOpenSsh" {
-  count    = "${var.aws_key_name == "" ? 1 : 0}"
-  content  = "${tls_private_key.private_key_bastionhost.public_key_openssh}"
-  filename = "${path.module}/keys/public_openssh.pub"
-}
-
-resource "aws_s3_bucket_object" "uploadPubKey" {
-  count      = "${var.aws_key_name == "" ? 1 : 0}"
-  bucket     = "${var.ssh_pubkey_bucket}"
-  content    = "${tls_private_key.private_key_bastionhost.public_key_openssh}"
-  depends_on = ["tls_private_key.private_key_bastionhost"]
-  key        = "${var.ssh_pubkey_prefix}${local.resource_prefix}bastionhost-${random_id.configId.b64_url}.pub"
-  tags       = "${local.common_tags}"
-
-  lifecycle {
-    ignore_changes = ["tags.tf_created"]
-  }
-}
-
-data "template_file" "awskeyname" {
-  template = "${local.resource_prefix}${lookup(local.common_tags,"tf_project_name")}"
+resource "aws_iam_role_policy" "bastionIamSnsTopicPol" {
+  name   = "snsTopicPol"
+  policy = "${data.template_file.iampolicy_sns.rendered}"
+  role   = "${aws_iam_role.bastionhostRole.id}"
 }
 
 resource "aws_lb" "bastionLb" {

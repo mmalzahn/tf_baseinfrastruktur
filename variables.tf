@@ -48,7 +48,7 @@ variable "ssh_pubkey_bucket" {
 }
 
 variable "ssh_pubkey_prefix" {
-  default = "public-keys/"
+  default = "keys/"
 }
 
 variable "backend_key" {
@@ -79,8 +79,8 @@ variable "api_deploy_path" {
   default ="v1"
 }
 
-variable "mm_debug" {
-  default = 0
+variable "debug_on" {
+  default = false
 }
 
 variable "aws_amis" {

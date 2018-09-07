@@ -32,6 +32,7 @@ while read line; do
       chown $USER_NAME:$USER_NAME /home/$USER_NAME/.ssh && \
       echo "$line" >> ~/keys_installed && \
       echo "`date --date="today" "+%Y-%m-%d %H-%M-%S"`-[`hostname`]: Creating user account for $USER_NAME ($line)" >> $LOG_FILE
+      aws --region ${region} sns publish --topic-arn "${topic_arn}" --subject "[$(hostname)] - NEW User $USER_NAME" --message "der User mit dem Username $USER_NAME wurde auf dem Host angelegt"
     fi
 
     # Copy the public key from S3, if a user account was created 
@@ -56,6 +57,7 @@ if [ -f ~/keys_installed ]; then
   while read line; do
     USER_NAME="`get_user_name "$line"`"
     echo "`date --date="today" "+%Y-%m-%d %H-%M-%S"`-[`hostname`]: Removing user account for $USER_NAME ($line)" >> $LOG_FILE
+    aws --region ${region} sns publish --topic-arn "${topic_arn}" --subject "[$(hostname)] - REMOVE User $USER_NAME" --message "der User mit dem Username $USER_NAME wurde vom Host entfernt"
     /usr/sbin/userdel -r -f $USER_NAME
   done < ~/keys_to_remove
   comm -3 ~/keys_installed ~/keys_to_remove | sed "s/\t//g" > ~/tmp && mv ~/tmp ~/keys_installed
