@@ -101,5 +101,9 @@ variable "pubkeyList" {
 }
 
 variable "testhost_deploy" {
-  default = true
+  default = false
+}
+
+variable "dns_domain" {
+  default = "dca-poc.de"
 }

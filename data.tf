@@ -10,15 +10,19 @@ locals {
     tf_responsible  = "${var.tag_responsibel}"
     tf_configId     = "${random_id.configId.b64_url}"
   }
-
+  adminInfoTopic = "${data.dns_txt_record_set.infotopic.record}"
   resource_prefix = "${random_id.randomPart.b64_url}-${replace(var.project_name,"_","")}-${terraform.workspace}-"
   workspace_key   = "env:/${terraform.workspace}/${var.backend_key}"
+}
+
+data "dns_txt_record_set" "infotopic" {
+  host = "_infotopic.${var.dns_domain}"
 }
 
 data "aws_availability_zones" "azs" {}
 
 data "aws_route53_zone" "dca_poc_domain" {
-  name = "dca-poc.de."
+  name = "${var.dns_domain}."
 }
 
 data "aws_iam_policy_document" "instance-assume-role-policy" {
@@ -42,11 +46,11 @@ resource "random_id" "randomPart" {
 
  data "aws_acm_certificate" "cert_dev" {
    provider = "aws.usa"
-   domain   = "*.dev.dca-poc.de"
+   domain   = "*.dev.${var.dns_domain}"
  }
  data "aws_acm_certificate" "cert_base" {
    provider = "aws.usa"
-   domain   = "*.dca-poc.de"
+   domain   = "*.${var.dns_domain}"
  }
 
  data "aws_ami" "bastionhostPackerAmi" {
