@@ -87,10 +87,8 @@ output "efs_mount_targets_dns" {
 
 output "secgroups" {
   value = "${map("ssh_all_in", aws_security_group.SG_SSH_IN_from_anywhere.id,
-                 "http_all_in", aws_security_group.SG_HTTPS_IN_from_VPC.id,
-                 "dockersock_bastion_in", aws_security_group.SG_DockerSocket_IN_from_Bastionhost.id,
                  "ssh_bastion_in", aws_security_group.SG_SSH_IN_from_Bastionhost.id,
-                 "http_in_from_vpc",aws_security_group.SG_HTTPS_IN_from_VPC.id)
+                 "rdp_bastion_in",aws_security_group.SG_RDP_IN_from_Bastionhost.id)
             }"
 }
 
