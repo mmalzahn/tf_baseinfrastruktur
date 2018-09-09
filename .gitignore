@@ -10,3 +10,7 @@ terraform\.tfstate\.backup
 debug/
 
 tmp/
+
+backendInit/cfg/
+
+backendInit/keys/
