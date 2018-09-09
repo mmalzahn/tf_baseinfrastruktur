@@ -3,7 +3,7 @@ aws_accountId = "681337066511"
 #
 # CIDR-Rage des zu erstellenden VPC
 #
-vpc_cdir = "10.101.0.0/16"
+vpc_cdir = "10.200.0.0/16"
 
 
 #
@@ -34,16 +34,17 @@ laufzeit_tage = 60
 
 project_name = "DcaBaseInf"
 
-mm_debug = 0
-
+debug_on = true
+testhost_deploy = true
 az_count = 3
 
 efs_storage = true
 
-api_deploy = true
+api_deploy = false
 
-optimal_design = true
+optimal_design = false
 
 servicenet_deploy = true
 
 pubkeyList = ["matthiasm.pub","testuser1.pub","testuser2.pub"]
+#pubkeyList = ["matthiasm.pub"]

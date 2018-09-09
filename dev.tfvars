@@ -34,17 +34,20 @@ laufzeit_tage = 60
 
 project_name = "DcaBaseInf"
 
-debug_on = true
+debug_on = false
 testhost_deploy = false
 az_count = 1
 
-efs_storage = false
+efs_storage = true
 
 api_deploy = false
 
 optimal_design = false
 
-servicenet_deploy = false
+servicenet_deploy = true
 
 pubkeyList = ["matthiasm.pub","testuser1.pub","testuser2.pub"]
 #pubkeyList = ["matthiasm.pub"]
+
+backend_dynodbTable ="mm-terraform-state-lock-dynamo"
+backend_bucket = "mm-terraform-remote-state-storage"

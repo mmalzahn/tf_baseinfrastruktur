@@ -1,7 +1,7 @@
 provider "aws" {
   region                  = "${var.aws_region}"
-#  shared_credentials_file = "C:/Users/matthias/.aws/credentials"
-#  profile                 = "tfinfrauser"
+  shared_credentials_file = "backendinit/cfg/iamcreds"
+  profile                 = "autoIamUser"
 }
 
 provider "aws" {
@@ -13,9 +13,9 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket         = "mm-terraform-remote-state-storage"
+#    bucket         = "${var.backend_bucket}"
     key            = "baseinfrastruktur.state"
-    dynamodb_table = "mm-terraform-state-lock-dynamo"
-    region         = "eu-west-1"
+#    dynamodb_table = "${var.backend_dynodbTable}"
+#    region         = "eu-west-1"
   }
 }
