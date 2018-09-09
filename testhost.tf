@@ -47,7 +47,7 @@ resource "aws_route53_record" "internerTesthost" {
   count           = "${var.debug_on ? 1 : var.testhost_deploy ? 1 :0}"
   allow_overwrite = "true"
   depends_on      = ["aws_instance.internerTesthost"]
-  name            = "internertesthost.${terraform.workspace}"
+  name            = "internertesthost.${terraform.workspace}.${random_string.projectId.result}"
   ttl             = "60"
   type            = "A"
   records         = ["${aws_instance.internerTesthost.private_ip}"]

@@ -2,11 +2,6 @@ variable "aws_region" {
   default     = "eu-west-1"
   description = "AWS Region fuer das Deployment"
 }
-
-variable "backend_bucket" {}
-
-variable "backend_dynodbTable" {}
-
 variable "vpc_cdir" {
   default     = "10.15.0.0/16"
   description = "CIDR des anzulegenden VPCs"

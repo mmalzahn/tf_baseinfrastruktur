@@ -7,15 +7,16 @@ provider "aws" {
 provider "aws" {
   alias                   = "usa"
   region                  = "us-east-1"
-#  shared_credentials_file = "C:/Users/matthias/.aws/credentials"
-#  profile                 = "tfinfrauser"
+  shared_credentials_file = "backendinit/cfg/iamcreds"
+  profile                 = "autoIamUser"
 }
 
 terraform {
   backend "s3" {
-#    bucket         = "${var.backend_bucket}"
-    key            = "baseinfrastruktur.state"
-#    dynamodb_table = "${var.backend_dynodbTable}"
-#    region         = "eu-west-1"
+    key = "baseinfrastruktur.state"
+
+    #    bucket         = ""
+    #    dynamodb_table = ""
+    #    region         = "eu-west-1"
   }
 }

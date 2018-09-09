@@ -84,7 +84,7 @@ resource "aws_route53_record" "bastionhostdns" {
   count           = "${var.optimal_design ? var.az_count : 1}"
   allow_overwrite = "true"
   depends_on      = ["aws_instance.bastionhost"]
-  name            = "bastion-${count.index + 1}.${terraform.workspace}"
+  name            = "bastion-${count.index + 1}.${terraform.workspace}.${random_string.projectId.result}"
   type            = "A"
   ttl             = 60
   records         = ["${element(aws_instance.bastionhost.*.public_ip, count.index)}"]
@@ -95,7 +95,7 @@ resource "aws_route53_record" "bastionhostdnsdirekt" {
   count           = "${var.optimal_design ? 0 : 1}"
   allow_overwrite = "true"
   depends_on      = ["aws_instance.bastionhost"]
-  name            = "bastionhost.${terraform.workspace}"
+  name            = "bastionhost.${terraform.workspace}.${random_string.projectId.result}"
   type            = "A"
   ttl             = 60
   zone_id         = "${data.aws_route53_zone.dca_poc_domain.zone_id}"
@@ -107,7 +107,7 @@ resource "aws_route53_record" "bastionhostalias" {
   allow_overwrite = "true"
   depends_on      = ["aws_lb.bastionLb"]
 
-  name    = "bastionhost.${terraform.workspace}"
+  name    = "bastionhost.${terraform.workspace}.${random_string.projectId.result}"
   ttl     = 60
   type    = "CNAME"
   records = ["${aws_lb.bastionLb.dns_name}"]
