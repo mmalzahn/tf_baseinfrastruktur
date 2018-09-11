@@ -95,7 +95,7 @@ resource "aws_api_gateway_domain_name" "tfapidomain_workspace" {
 
 resource "aws_api_gateway_domain_name" "tfapidomain_base" {
   count           = "${var.api_deploy ? terraform.workspace == "prod" ? 1: 0 : 0}"
-  domain_name     = "${var.api_deploy_dns}.dca-poc.de"
+  domain_name     = "dev.dca-poc.de"
   certificate_arn = "${data.aws_acm_certificate.cert_base.arn}"
 }
 
