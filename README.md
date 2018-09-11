@@ -21,7 +21,7 @@ Das Statefile wird in einem S3 Bucket auf AWS abgelegt um einen gemeinsamen Zugr
 provider "aws" {
   alias                              = "usa"
   region                           = "us-east-1"
-  shared_credentials_file  = "C:/Users/matthias/.aws/credentials"
+  shared_credentials_file  = "C:/Users/<profilepath>/.aws/credentials"
   profile                            = "tfinfrauser"
 }
 ```
