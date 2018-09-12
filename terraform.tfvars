@@ -3,27 +3,25 @@ aws_accountId = "681337066511"
 #
 # CIDR-Rage des zu erstellenden VPC
 #
-vpc_cdir = "10.22.0.0/16"
+vpc_cdir = "10.100.0.0/16"
 
 
 #
 # Startbereich der DMZ Subnetze
 #
-subnetoffset_dmz = 40
+subnetoffset_dmz = 0
 
 
 #
 # Startbereich der Internen Subnetze
 #
-subnetoffset_intra = 10
+subnetoffset_intra = 20
 
 
 #
 # Startbereich der AMZ Service Subnetze
 #
-subnetoffset_service = 30
-
-#hard_change = "true"
+subnetoffset_service = 200
 
 tag_responsibel = "Matthias Malzahn"
 
@@ -36,7 +34,8 @@ project_name = "DcaBaseInf"
 
 debug_on = false
 testhost_deploy = false
-az_count = 1
+
+az_count = 2
 
 efs_storage = true
 
@@ -46,8 +45,5 @@ optimal_design = false
 
 servicenet_deploy = true
 
-pubkeyList = ["matthiasm.pub","testuser1.pub","testuser2.pub"]
-#pubkeyList = ["matthiasm.pub"]
-
-backend_dynodbTable ="mm-terraform-state-lock-dynamo"
-backend_bucket = "mm-terraform-remote-state-storage"
+#pubkeyList = ["matthiasm.pub","testuser1.pub","testuser2.pub"]
+pubkeyList = ["matthiasm.pub"]
