@@ -1,5 +1,5 @@
 resource "aws_instance" "internerTesthost" {
-  count                       = "${var.debug_on ? 1 : var.testhost_deploy ? 1 :0}"
+  count                       = "${var.debug_on ? var.testhost_deploy ? 1 : 0 : 0}"
   ami                         = "${data.aws_ami.bastionhostPackerAmi.id}"
   instance_type               = "t2.micro"
   subnet_id                   = "${element(aws_subnet.Backend.*.id,count.index)}"
@@ -23,19 +23,19 @@ resource "aws_instance" "internerTesthost" {
 
   tags = "${merge(local.common_tags,
             map(
-              "Name", "${local.resource_prefix}intern_LinuxTesthost_${count.index + 1}_${lookup(local.common_tags,"tf_project")}"
+              "Name", "${local.resource_prefix}intern_LinuxTesthost_${count.index + 1}"
               )
               )}"
 
   volume_tags = "${merge(local.common_tags,
             map(
-              "belongs_to", "${local.resource_prefix}intern_LinuxTesthost_${count.index + 1}_${lookup(local.common_tags,"tf_project")}"
+              "belongs_to", "${local.resource_prefix}intern_LinuxTesthost_${count.index + 1}"
               )
               )}"
 }
 
 data "template_file" "testhostUserdata" {
-  count    = "${var.debug_on ? 1 : var.testhost_deploy ? 1 :0}"
+  count    = "${var.debug_on ? var.testhost_deploy ? 1 : 0 : 0}"
   template = "${file("tpl/testhostinstall.tpl")}"
 
   vars {
@@ -44,7 +44,7 @@ data "template_file" "testhostUserdata" {
 }
 
 resource "aws_route53_record" "internerTesthost" {
-  count           = "${var.debug_on ? 1 : var.testhost_deploy ? 1 :0}"
+  count           = "${var.debug_on ? var.testhost_deploy ? 1 : 0 : 0}"
   allow_overwrite = "true"
   depends_on      = ["aws_instance.internerTesthost"]
   name            = "internertesthost.${terraform.workspace}.${random_string.projectId.result}"
