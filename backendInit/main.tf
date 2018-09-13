@@ -48,6 +48,13 @@ data "template_file" "tfbackendcfg" {
   }
 }
 
+resource "local_file" "bucketId" {
+  content = "${aws_s3_bucket.terraform_state.id}"
+  filename = "${path.module}/cfg/bucketid"
+  depends_on = ["aws_s3_bucket.terraform_state"]
+}
+
+
 resource "local_file" "tfbackendcfg" {
   content  = "${data.template_file.tfbackendcfg.rendered}"
   filename = "${path.module}/cfg/backend.cfg"
