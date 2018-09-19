@@ -25,17 +25,17 @@ subnetoffset_service = 200
 
 tag_responsibel = "Matthias Malzahn"
 
-aws_key_name = "CSA-DemoVPCKey1"
+#aws_key_name = "CSA-DemoVPCKey1"
 
-#aws_key_name = ""
+aws_key_name = ""
 laufzeit_tage = 60
 
 project_name = "DcaBaseInf"
 
-debug_on = false
+debug_on = true
 testhost_deploy = false
 
-az_count = 2
+az_count = 3
 
 efs_storage = true
 
