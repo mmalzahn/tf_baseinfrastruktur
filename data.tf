@@ -56,12 +56,11 @@ data "aws_acm_certificate" "cert_base" {
 }
 
 data "aws_ami" "bastionhostPackerAmi" {
-  owners      = ["681337066511"]
   most_recent = true
-
+  owners = ["amazon"]
   filter {
-    name   = "tag:tf_packerid"
-    values = ["bastionhost"]
+    name ="name"
+    values =["amzn2-ami-hvm-2.*-x86_64-gp2"]
   }
 }
 
